@@ -246,12 +246,9 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         if (getTarget() != null && (!getTarget().isAlive() || getTarget().getHealth() <= 0)) setTarget(null);
         if(!world.isClient) {
             if (!isDormant()) {
-                System.out.println(this.getTarget() == null);
-                System.out.println(forwardSpeed == 0);
-                System.out.println(isAtDormantPos());
-                if (this.getTarget() == null && forwardSpeed == 0 && isAtDormantPos()) {
+                if (this.getTarget() == null && forwardSpeed == 0 && this.getNavigation().isIdle() && isAtDormantPos()) {
                     setDormant(true);
-                    System.out.println("amogus");
+                    this.setPos(getDormantPos().get().getX() + 0.5, getDormantPos().get().getY(), getDormantPos().get().getZ() + 0.5);
                 }
             } else if (getTarget() != null && squaredDistanceTo(getTarget()) < 100 && dataTracker.get(ACTION_STATE) != 0) {
                 activationTicks++;
@@ -334,7 +331,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     private boolean isAtDormantPos() {
         Optional<BlockPos> restPos = getDormantPos();
         if(restPos.isPresent()) {
-            return restPos.get().isWithinDistance(this.getBlockPos(), 2);
+            return restPos.get().isWithinDistance(this.getBlockPos(), 1.2f);
         }
         return false;
     }
@@ -343,7 +340,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         boolean reassign = true;
         if (getDormantPos().isPresent()) {
             BlockPos pos = getDormantPos().get();
-            if (this.getNavigation().startMovingAlong(this.getNavigation().findPathTo(pos, 100), 1)) {
+            if (this.getNavigation().startMovingTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.7)) {
                 reassign = false;
             }
             reassign = false;
