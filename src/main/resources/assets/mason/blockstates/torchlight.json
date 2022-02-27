@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "mason:block/torchlight"
+    }
+  }
+}

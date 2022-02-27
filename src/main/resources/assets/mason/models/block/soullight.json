@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "mason:block/light_top",
+    "bottom": "mason:block/light_bottom",
+    "side": "mason:block/soullight"
+  }
+}

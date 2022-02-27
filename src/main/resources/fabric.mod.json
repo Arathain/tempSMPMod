@@ -1,29 +1,29 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "mason",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Mason's Decor",
+  "description": "Life is temporary",
   "authors": [
-    "Me!"
+    "Arathain"
   ],
-  "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
-  },
+  "contact": {},
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "ARR",
+  "icon": "assets/mason/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "arathain.mason.MasonDecor"
+    ],
+    "client": [
+      "arathain.mason.MasonDecorClient"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "mason.mixins.json"
   ],
 
   "depends": {

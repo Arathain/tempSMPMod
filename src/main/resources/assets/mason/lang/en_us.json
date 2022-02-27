@@ -1,0 +1,9 @@
+{
+  "block.mason.torchlight": "Torchlight",
+  "block.mason.soullight": "Soullight",
+  "item.mason.soulmould": "Mould of Souls",
+  "entity.tot.raven": "Raven",
+  "entity.tot.soulmould": "Mould of Souls",
+  "info.tot.mould_activate": "Mould of Souls in Guard state",
+  "info.tot.mould_deactivate": "Mould of Souls in Dormant state"
+}

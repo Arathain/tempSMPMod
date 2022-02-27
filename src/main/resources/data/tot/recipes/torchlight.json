@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "HHH",
+    "###",
+    "HHH"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:torch"
+    },
+    "H": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "minecraft:bundle"
+  }
+}
