@@ -10,6 +10,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -22,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.awt.*;
 import java.util.Random;
 
 @Mixin(StrongholdGenerator.PortalRoom.class)

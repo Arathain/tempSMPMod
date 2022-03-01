@@ -227,10 +227,10 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     private void cycleActionState(PlayerEntity player) {
         if(getActionState() == 0) {
             setActionState(2);
-            player.sendMessage(new TranslatableText("info.tot.mould_activate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), true);
+            player.sendMessage(new TranslatableText("amogus", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withObfuscated(true).withFont(new Identifier("minecraft", "default"))), true);
         } else if(getActionState() == 2) {
             setActionState(1);
-            player.sendMessage(new TranslatableText("amogus", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withObfuscated(true).withFont(new Identifier("minecraft", "default"))), true);
+            player.sendMessage(new TranslatableText("info.tot.mould_activate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), true);
         } else if(getActionState() == 1) {
             setActionState(0);
             player.sendMessage(new TranslatableText("info.tot.mould_deactivate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY)), true);
