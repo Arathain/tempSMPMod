@@ -28,6 +28,7 @@ public class SoulmouldItem extends Item {
             mould.refreshPositionAndAngles(pos.offset(ctx.getSide()), 0, 0);
             mould.setDormantDir(ctx.getPlayerFacing().getOpposite());
             mould.setDormantPos(pos.offset(ctx.getSide()));
+            mould.setActionState(0);
             assert player != null;
             mould.setOwner(player);
             ctx.getWorld().spawnEntity(mould);

@@ -4,6 +4,7 @@ import arathain.mason.MasonDecor;
 import arathain.mason.entity.RavenEntity;
 import arathain.mason.entity.SoulmouldEntity;
 import arathain.mason.item.SoulmouldItem;
+import arathain.mason.item.StrongholdSoulmouldBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -13,6 +14,7 @@ import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -31,11 +33,18 @@ public class MasonObjects {
 
     public static final Block TORCHLIGHT = createBlock("torchlight", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.GRAY).requiresTool().strength(1.5F, 6.0F).sounds(BlockSoundGroup.LANTERN).luminance((blockState) -> 15)), true);
     public static final Block SOULLIGHT = createBlock("soullight", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.GRAY).requiresTool().strength(1.5F, 6.0F).sounds(BlockSoundGroup.LANTERN).luminance((blockState) -> 11)), true);
+    public static final Block MOULDTEMP = createBlock("stronghold_soulmould_block", new StrongholdSoulmouldBlock(AbstractBlock.Settings.copy(TORCHLIGHT)), false);
+
+    public static final Item WROUGHTSTEEL_INGOT = createItem("wroughtsteel_ingot", new Item(new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item WROUGHTSTEEL_HELMET = createItem("wroughtsteel_helmet", new ArmorItem(MasonArmorMaterials.WROUGHTSTEEL, EquipmentSlot.HEAD, new Item.Settings().group(ItemGroup.COMBAT)));
+    public static final Item WROUGHTSTEEL_CHESTPLATE = createItem("wroughtsteel_chestplate", new ArmorItem(MasonArmorMaterials.WROUGHTSTEEL, EquipmentSlot.CHEST, new Item.Settings().group(ItemGroup.COMBAT)));
+    public static final Item WROUGHTSTEEL_LEGGINGS = createItem("wroughtsteel_leggings", new ArmorItem(MasonArmorMaterials.WROUGHTSTEEL, EquipmentSlot.LEGS, new Item.Settings().group(ItemGroup.COMBAT)));
+    public static final Item WROUGHTSTEEL_BOOTS = createItem("wroughtsteel_boots", new ArmorItem(MasonArmorMaterials.WROUGHTSTEEL, EquipmentSlot.FEET, new Item.Settings().group(ItemGroup.COMBAT)));
 
     public static final Item SOULMOULD_ITEM = createItem("soulmould", new SoulmouldItem(new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.DECORATIONS).maxCount(16)));
 
     public static final EntityType<RavenEntity> RAVEN = createEntity("raven", RavenEntity.createRavenAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RavenEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.4F)).build());
-    public static final EntityType<SoulmouldEntity> SOULMOULD = createEntity("soulmould", SoulmouldEntity.createSoulmouldAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SoulmouldEntity::new).dimensions(EntityDimensions.fixed(0.85F, 3.0F)).fireImmune().build());
+    public static final EntityType<SoulmouldEntity> SOULMOULD = createEntity("soulmould", SoulmouldEntity.createSoulmouldAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SoulmouldEntity::new).dimensions(EntityDimensions.fixed(0.85F, 2.7F)).fireImmune().build());
 
     private static <T extends Entity> EntityType<T> createEntity(String name, EntityType<T> type) {
         ENTITY_TYPES.put(type, new Identifier(MasonDecor.MODID, name));

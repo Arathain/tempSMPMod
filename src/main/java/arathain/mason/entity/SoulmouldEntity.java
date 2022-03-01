@@ -1,6 +1,7 @@
 package arathain.mason.entity;
 
 import arathain.mason.entity.goal.*;
+import arathain.mason.init.MasonObjects;
 import net.minecraft.block.EnchantingTableBlock;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
@@ -11,13 +12,18 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.ServerConfigHandler;
+import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -57,10 +63,11 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     public int dashSlashTicks = 0;
     public SoulmouldEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
+        this.stepHeight = 1.6f;
     }
 
     public static DefaultAttributeContainer.Builder createSoulmouldAttributes() {
-        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 100).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 10).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 80).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 10).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f);
     }
     @Override
     protected void initGoals() {
@@ -70,7 +77,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         this.goalSelector.add(0, new SoulmouldDashSlashGoal(this));
         this.targetSelector.add(1, new TamedTrackAttackerGoal(this));
         this.targetSelector.add(2, new TamedAttackWithOwnerGoal<>(this));
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, ZombifiedPiglinEntity.class, 10, true, false, LivingEntity::isAlive));
+        this.targetSelector.add(2, new ActiveTargetGoal<>(this, LivingEntity.class, 10, true, false, livingEntity -> !livingEntity.equals(this.getOwner()) && !(livingEntity instanceof TameableEntity tamed && tamed.getOwner() != null && tamed.getOwner().equals(this.getOwner())) && !(livingEntity instanceof ArmorStandEntity) && this.getActionState() == 2 && !(livingEntity instanceof BatEntity)));
     }
     protected void initDataTracker() {
         super.initDataTracker();
@@ -199,20 +206,32 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     }
 
     @Override
+    public ItemStack getPickBlockStack() {
+        return MasonObjects.SOULMOULD_ITEM.getDefaultStack();
+    }
+
+    @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         if(player.getStackInHand(hand).isEmpty() && player.getUuid().equals(this.getOwnerUuid())) {
-            this.cycleActionState(player);
+            if(player.isSneaking()) {
+                if(!player.getAbilities().creativeMode)
+                player.setStackInHand(hand, MasonObjects.SOULMOULD_ITEM.getDefaultStack());
+                this.remove(RemovalReason.DISCARDED);
+                return ActionResult.SUCCESS;
+            } else {
+                this.cycleActionState(player);
+            }
         }
         return super.interactMob(player, hand);
     }
     private void cycleActionState(PlayerEntity player) {
         if(getActionState() == 0) {
-            setActionState(1);
-            player.sendMessage(new TranslatableText("info.tot.mould_activate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), true);
-        } else if(getActionState() == 1) {
             setActionState(2);
-            player.sendMessage(new TranslatableText("amogus", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withObfuscated(true).withFont(new Identifier("minecraft", "default"))), true);
+            player.sendMessage(new TranslatableText("info.tot.mould_activate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), true);
         } else if(getActionState() == 2) {
+            setActionState(1);
+            player.sendMessage(new TranslatableText("amogus", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withObfuscated(true).withFont(new Identifier("minecraft", "default"))), true);
+        } else if(getActionState() == 1) {
             setActionState(0);
             player.sendMessage(new TranslatableText("info.tot.mould_deactivate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY)), true);
         }
@@ -246,9 +265,9 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         if (getTarget() != null && (!getTarget().isAlive() || getTarget().getHealth() <= 0)) setTarget(null);
         if(!world.isClient) {
             if (!isDormant()) {
-                if (this.getTarget() == null && forwardSpeed == 0 && this.getNavigation().isIdle() && isAtDormantPos()) {
+                if ((this.getTarget() == null || (this.getTarget() != null && this.getDormantPos().isPresent() && !this.getDormantPos().get().isWithinDistance(this.getTarget().getPos(), 10))) && forwardSpeed == 0 && this.getNavigation().isIdle() && isAtDormantPos()) {
                     setDormant(true);
-                    this.setPos(getDormantPos().get().getX() + 0.5, getDormantPos().get().getY(), getDormantPos().get().getZ() + 0.5);
+                    this.updatePositionAndAngles(getDormantPos().get().getX() + 0.5, getDormantPos().get().getY(), getDormantPos().get().getZ() + 0.5, this.getYaw(), this.getPitch());
                 }
             } else if (getTarget() != null && squaredDistanceTo(getTarget()) < 100 && dataTracker.get(ACTION_STATE) != 0) {
                 activationTicks++;
@@ -267,7 +286,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
             setHeadYaw(getDormantDir().asRotation());
             setPitch(0);
         }
-        if (getTarget() == null && getNavigation().isIdle() && !isAtDormantPos() && !isDormant()) updateDormantPos();
+        if ((this.getTarget() == null || (this.getTarget() != null && this.getDormantPos().isPresent() && !this.getDormantPos().get().isWithinDistance(this.getTarget().getPos(), 10))) && getNavigation().isIdle() && !isAtDormantPos() && !isDormant()) updateDormantPos();
     }
 
     @Override
@@ -283,7 +302,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
                 animationBuilder.addAnimation("dormant", true);
             }
         } else if(this.getAttackState() == 2) {
-            animationBuilder.addAnimation("attack", false);
+            animationBuilder.addAnimation("attack", true);
         } else {
             if (!this.hasVehicle() && event.isMoving()) {
                 animationBuilder.addAnimation("walk", true);
@@ -331,7 +350,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     private boolean isAtDormantPos() {
         Optional<BlockPos> restPos = getDormantPos();
         if(restPos.isPresent()) {
-            return restPos.get().isWithinDistance(this.getBlockPos(), 1.2f);
+            return restPos.get().isWithinDistance(this.getBlockPos(), 1.6f);
         }
         return false;
     }

@@ -22,6 +22,8 @@
       "arathain.mason.MasonDecorClient"
     ]
   },
+  "accessWidener" : "tot.accesswidener",
+
   "mixins": [
     "mason.mixins.json"
   ],

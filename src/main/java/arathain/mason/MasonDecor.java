@@ -5,8 +5,10 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.OverworldBiomeCreator;
+import net.minecraft.world.gen.feature.StrongholdFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

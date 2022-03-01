@@ -4,6 +4,7 @@
   "package": "arathain.mason.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "StrongholdPortalRoomMixin"
   ],
   "client": [
   ],
