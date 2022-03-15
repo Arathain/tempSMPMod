@@ -845,21 +845,21 @@
 							"vector": [-5, -5, 0]
 						},
 						"1.0": {
-							"vector": [-5, 20, 0],
+							"vector": [-5, 30, 0],
 							"easing": "easeInQuart"
 						},
 						"1.0833": {
-							"vector": [-5, 20, 0]
+							"vector": [-5, 30, 0]
 						},
 						"1.25": {
-							"vector": [-5, -13, 0],
+							"vector": [-5, -15, 0],
 							"easing": "easeInQuart"
 						},
 						"1.3333": {
-							"vector": [-5, -13, 0]
+							"vector": [-5, -15, 0]
 						},
 						"1.5": {
-							"vector": [-5, 43, 0],
+							"vector": [-5, 53, 0],
 							"easing": "easeInQuart"
 						}
 					}

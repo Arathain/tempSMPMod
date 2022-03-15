@@ -70,7 +70,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     }
 
     public static DefaultAttributeContainer.Builder createSoulmouldAttributes() {
-        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 140).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 14).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 32f);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 160).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 16).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f);
     }
     @Override
     protected void initGoals() {

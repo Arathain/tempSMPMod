@@ -3,11 +3,9 @@ package arathain.mason.entity;
 import arathain.mason.MasonDecorClient;
 import arathain.mason.entity.goal.RavenDeliverBundleGoal;
 import arathain.mason.entity.goal.RavenFollowOwnerGoal;
+import arathain.mason.init.MasonObjects;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
@@ -163,11 +161,12 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
         }
         if (this.hasCustomName()) {
             String name = this.getCustomName().getString();
-            if (name.equalsIgnoreCase("three_eyed") || name.equalsIgnoreCase("three_eyed_raven") || name.equalsIgnoreCase("three eyed") || name.equalsIgnoreCase("three eyed raven")) {
+            if (name.equalsIgnoreCase("three_eyed") || name.equalsIgnoreCase("three_eyed_raven") || name.equalsIgnoreCase("three eyed") || name.equalsIgnoreCase("three eyed raven") || name.equalsIgnoreCase("three-eyed raven")) {
                 this.setRavenType(Type.THREE_EYED);
             }
         }
     }
+
 
     public void spawnFeatherParticles(int count) {
         float height = this.getHeight();
@@ -266,7 +265,19 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return null;
+        RavenEntity child = MasonObjects.RAVEN.create(world);
+        if (child != null) {
+            child.initialize(world, world.getLocalDifficulty(getBlockPos()), SpawnReason.BREEDING, null, null);
+            UUID owner = getOwnerUuid();
+            if (owner != null) {
+                child.setOwnerUuid(owner);
+                child.setTamed(true);
+            }
+            if (entity instanceof RavenEntity && random.nextFloat() < 0.95f) {
+                child.dataTracker.set(TYPE, random.nextBoolean() ? dataTracker.get(TYPE) : entity.getDataTracker().get(TYPE));
+            }
+        }
+        return child;
     }
 
     @Override
