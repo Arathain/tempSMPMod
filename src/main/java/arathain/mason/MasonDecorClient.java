@@ -1,5 +1,6 @@
 package arathain.mason;
 
+import arathain.mason.client.AnimatedStatueRenderer;
 import arathain.mason.client.RavenEntityRenderer;
 import arathain.mason.client.RavenFeatherParticle;
 import arathain.mason.client.SoulmouldEntityRenderer;
@@ -18,6 +19,7 @@ public class MasonDecorClient implements ClientModInitializer {
         initParticles();
         EntityRendererRegistry.register(MasonObjects.SOULMOULD, SoulmouldEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.RAVEN, RavenEntityRenderer::new);
+        EntityRendererRegistry.register(MasonObjects.STATUE, AnimatedStatueRenderer::new);
     }
 
     public static final DefaultParticleType RAVEN_FEATHER = add("raven_feather");

@@ -3,11 +3,14 @@
   "pattern": [
     "DND",
     "NSN",
-    "DDD"
+    "ADA"
   ],
   "key": {
     "D": {
-      "item": "minecraft:polished_deepslate"
+      "item": "minecraft:soul_soil"
+    },
+    "A": {
+      "item": "minecraft:netherite_scrap"
     },
     "N": {
       "item": "minecraft:netherite_ingot"

@@ -1,6 +1,7 @@
 package arathain.mason.init;
 
 import arathain.mason.MasonDecor;
+import arathain.mason.entity.AnimatedStatueEntity;
 import arathain.mason.entity.RavenEntity;
 import arathain.mason.entity.SoulmouldEntity;
 import arathain.mason.item.SoulmouldItem;
@@ -42,6 +43,7 @@ public class MasonObjects {
 
     public static final EntityType<RavenEntity> RAVEN = createEntity("raven", RavenEntity.createRavenAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RavenEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.4F)).build());
     public static final EntityType<SoulmouldEntity> SOULMOULD = createEntity("soulmould", SoulmouldEntity.createSoulmouldAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SoulmouldEntity::new).dimensions(EntityDimensions.fixed(0.85F, 2.7F)).fireImmune().build());
+    public static final EntityType<AnimatedStatueEntity> STATUE = createEntity("statue", AnimatedStatueEntity.createStatueAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, AnimatedStatueEntity::new).dimensions(EntityDimensions.fixed(0.5F, 2.0F)).fireImmune().build());
 
     private static <T extends Entity> EntityType<T> createEntity(String name, EntityType<T> type) {
 

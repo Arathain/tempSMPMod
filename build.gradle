@@ -14,6 +14,10 @@ repositories {
 	maven {
 		url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
 	}
+	maven {
+		name = "Curse"
+		url = "https://www.cursemaven.com"
+	}
 }
 
 dependencies {
@@ -23,6 +27,8 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation 'software.bernie.geckolib:geckolib-fabric-1.18:3.0.27'
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "curse.maven:mannequins-488506:${project.mannequins_version}"
+	modImplementation "curse.maven:pollen-544350:${project.pollen_version}"
 }
 
 processResources {
