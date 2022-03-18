@@ -1,5 +1,5 @@
 {
-  "parent": "item/generated",
+  "parent": "mason:item/handheld_rotated",
   "textures": {
     "layer0": "tot:item/soultrap_effigy"
   }
