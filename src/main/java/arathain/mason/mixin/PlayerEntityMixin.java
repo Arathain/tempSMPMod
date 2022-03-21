@@ -48,7 +48,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Override
     public boolean hurtByWater() {
-        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && this.getWorld().getBiome(this.getBlockPos()).getCategory() == Biome.Category.RIVER || isInFlowingFluid(FluidTags.WATER)) {
+        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (this.getWorld().getBiome(this.getBlockPos()).getCategory() == Biome.Category.RIVER || isInFlowingFluid(FluidTags.WATER))) {
             return true;
         }
         return super.hurtByWater();
