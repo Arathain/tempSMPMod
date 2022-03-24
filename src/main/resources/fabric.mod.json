@@ -18,6 +18,9 @@
     "main": [
       "arathain.mason.MasonDecor"
     ],
+    "cardinal-components-entity": [
+      "arathain.mason.init.MasonComponents"
+    ],
     "client": [
       "arathain.mason.MasonDecorClient"
     ]
@@ -36,5 +39,10 @@
   },
   "suggests": {
     "another-mod": "*"
+  },
+  "custom": {
+    "cardinal-components": [
+      "mason:rider"
+    ]
   }
 }
