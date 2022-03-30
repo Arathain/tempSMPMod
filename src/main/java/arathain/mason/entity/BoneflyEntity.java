@@ -1,43 +1,27 @@
 package arathain.mason.entity;
 
-import arathain.mason.entity.goal.SoulmouldAttackLogicGoal;
-import arathain.mason.entity.goal.SoulmouldDashSlashGoal;
-import arathain.mason.entity.goal.TamedAttackWithOwnerGoal;
-import arathain.mason.entity.goal.TamedTrackAttackerGoal;
 import arathain.mason.init.MasonComponents;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.ZombieEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.ai.goal.LookAroundGoal;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.BatEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -58,6 +42,7 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
     private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(BoneflyEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     public BoneflyEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
+        this.stepHeight = 1;
     }
     public static DefaultAttributeContainer.Builder createBoneflyAttributes() {
         return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 60).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_FLYING_SPEED, 0.4).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f);
@@ -121,7 +106,7 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
     }
     @Override
     public void travel(Vec3d travelVector) {
-        boolean flying = !this.isOnGround();
+        boolean flying = this.isInAir();
         float speed = (float) this.getAttributeValue(flying ? EntityAttributes.GENERIC_FLYING_SPEED : EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (!this.hasPassengers() && !this.canBeControlledByRider()) {
             this.airStrafingSpeed = 0.02f;
@@ -145,7 +130,7 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
             if (!flying && isPlayerUpwardsMoving) this.jump();
 
             if (this.getFirstPassenger() != null) {
-                travelVector = new Vec3d(0, getFlightDelta, passenger.forwardSpeed * 0.5);
+                travelVector = new Vec3d(0, getFlightDelta, passenger.forwardSpeed * (flying ? 1 : 0.4f));
                 this.setMovementSpeed(speed);
                 this.stepBobbingAmount = 0;
             } else if (passenger instanceof PlayerEntity) {
@@ -166,11 +151,41 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
             this.updateLeash();
         }
     }
+    @Override
+    public void tick() {
+        super.tick();
+        if (age % 20 == 0 && getHealth() < getMaxHealth() && isDormant()) {
+            heal(2);
+        }
+        if(isDormant()) {
+            setVelocity(0, getVelocity().y, 0);
+            setPitch(0);
+        }
+    }
+    public boolean isInAir() {
+        return isHighEnough((int) stepHeight + 1);
+    }
+
+    public boolean isHighEnough(int altitude) {
+        return this.getAltitude(altitude) >= altitude;
+    }
+
+    public double getAltitude(int limit) {
+        BlockPos.Mutable mutable = this.getBlockPos().mutableCopy();
+
+        // limit so we don't do dozens of iterations per tick
+        for (int i = 0; i <= limit && mutable.getY() > 0 && !this.world.getBlockState(mutable.move(Direction.DOWN)).getMaterial().blocksMovement(); i++);
+        return this.getY() - mutable.getY() - 0.11;
+    }
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         if (this.isOwner(player) && !isBaby() && stack.isEmpty() && this.isTamed() && !this.hasPassengers()) {
-            player.startRiding(this);
-            this.navigation.stop();
+            if(player.isSneaking()) {
+                this.setDormant(!this.isDormant());
+            } else {
+                player.startRiding(this);
+                this.navigation.stop();
+            }
         }
 
         return super.interactMob(player, hand);
@@ -209,10 +224,14 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
     }
     private <E extends IAnimatable> PlayState wingPredicate(AnimationEvent<E> event) {
         AnimationBuilder animationBuilder = new AnimationBuilder();
-        if (!this.isOnGround()) {
-            animationBuilder.addAnimation("fly", true);
+        if (this.isInAir()) {
+            animationBuilder.addAnimation("idleFly", true);
         } else {
-            //animationBuilder.addAnimation("stabIdle", true);
+            if(event.isMoving()) {
+                animationBuilder.addAnimation("walkGround", true);
+            } else {
+                animationBuilder.addAnimation("idleGround", true);
+            }
         }
 
         if(!animationBuilder.getRawAnimationList().isEmpty()) {
@@ -222,14 +241,13 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
     }
     private <E extends IAnimatable> PlayState idlePredicate(AnimationEvent<E> event) {
         AnimationBuilder animationBuilder = new AnimationBuilder();
-        if(this.hurtTime > 0 || this.deathTime > 0) {
-            animationBuilder.addAnimation("hurt", true);
-        } else if(this.isDormant()) {
+        if(this.isDormant()) {
             animationBuilder.addAnimation("idleDormant", true);
+        } else if(this.hurtTime > 0 || this.deathTime > 0) {
+            animationBuilder.addAnimation("hurt", true);
         } else {
-            animationBuilder.addAnimation("idle", true);
+            return PlayState.STOP;
         }
-
         if(!animationBuilder.getRawAnimationList().isEmpty()) {
             event.getController().setAnimation(animationBuilder);
         }

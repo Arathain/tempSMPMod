@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NNN",
+    "NSN",
+    "BNB"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:bone_meal"
+    },
+    "N": {
+      "item": "minecraft:bone_block"
+    },
+    "S": {
+      "item": "minecraft:netherite_block"
+    }
+  },
+  "result": {
+    "item": "mason:bonefly_skull"
+  }
+}
