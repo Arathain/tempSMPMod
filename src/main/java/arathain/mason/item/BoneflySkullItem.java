@@ -32,7 +32,7 @@ public class BoneflySkullItem extends Item {
             bonefly.setOwner(player);
             ctx.getWorld().spawnEntity(bonefly);
             player.getOffHandStack().decrement(16);
-            player.getMainHandStack().decrement(1);
+            ctx.getStack().decrement(1);
         }
 
         return super.useOnBlock(ctx);

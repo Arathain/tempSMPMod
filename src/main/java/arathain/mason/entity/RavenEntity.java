@@ -169,12 +169,20 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
 
 
     public void spawnFeatherParticles(int count) {
-        float height = this.getHeight();
-        if(height * 100 < 100) height = 1.0F;
-        else height = height + 0.5F;
-        for(int i = 0; i <= count; i++) {
-            double randomHeight = (double)this.random.nextInt((int)height * 10) / 10;
-            world.addParticle(this.getRavenType() == Type.ALBINO ? MasonDecorClient.RAVEN_FEATHER_ALBINO : this.getRavenType() == Type.SEA_GREEN ? MasonDecorClient.RAVEN_FEATHER_GREEN : MasonDecorClient.RAVEN_FEATHER, this.getX(), this.getY() + 0.2D + randomHeight, this.getZ(), 0, 0, 0);
+        if(world instanceof ServerWorld serverWorld) {
+            float height = this.getHeight();
+            if (height * 100 < 100) height = 1.0F;
+            else height = height + 0.5F;
+            for (int i = 0; i <= count; i++) {
+                double randomHeight = (double) this.random.nextInt((int) height * 10) / 10;
+                serverWorld.addParticle(
+                        switch(this.getRavenType()) {
+                            case DARK, THREE_EYED -> MasonDecorClient.RAVEN_FEATHER;
+                            case ALBINO -> MasonDecorClient.RAVEN_FEATHER_ALBINO;
+                            case SEA_GREEN -> MasonDecorClient.RAVEN_FEATHER_GREEN;
+                        },
+                        this.getX(), this.getY() + 0.2D + randomHeight, this.getZ(), 0, 0, 0);
+            }
         }
     }
 
