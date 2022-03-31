@@ -1,6 +1,7 @@
 package arathain.mason.entity;
 
 import arathain.mason.init.MasonComponents;
+import arathain.mason.init.MasonObjects;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -161,6 +162,15 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
             setVelocity(0, getVelocity().y, 0);
             setPitch(0);
         }
+    }
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        if(!world.isClient()) {
+            if (source.getAttacker() != null && source.getAttacker() instanceof PlayerEntity player && player.isHolding(MasonObjects.SOULTRAP_EFFIGY_ITEM)) {
+                this.setOwner(player);
+            }
+        }
+        return super.damage(source, amount);
     }
     public boolean isInAir() {
         return isHighEnough((int) stepHeight + 1);

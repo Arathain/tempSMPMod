@@ -2,6 +2,7 @@ package arathain.mason.entity;
 
 import arathain.mason.entity.goal.*;
 import arathain.mason.init.MasonObjects;
+import gg.moonflower.mannequins.common.entity.AbstractMannequin;
 import net.minecraft.block.EnchantingTableBlock;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
@@ -10,6 +11,7 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -70,7 +72,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     }
 
     public static DefaultAttributeContainer.Builder createSoulmouldAttributes() {
-        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 160).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 16).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 100).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 16).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f);
     }
     @Override
     protected void initGoals() {
@@ -80,7 +82,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         this.goalSelector.add(0, new SoulmouldDashSlashGoal(this));
         this.targetSelector.add(1, new TamedTrackAttackerGoal(this));
         this.targetSelector.add(2, new TamedAttackWithOwnerGoal<>(this));
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, LivingEntity.class, 10, true, false, livingEntity -> !livingEntity.equals(this.getOwner()) && !(livingEntity instanceof TameableEntity tamed && tamed.getOwner() != null && tamed.getOwner().equals(this.getOwner())) && !(livingEntity instanceof ArmorStandEntity) && !(livingEntity instanceof SoulmouldEntity mould && mould.isOwner(this.getOwner())) && this.getActionState() == 2 && !(livingEntity instanceof BatEntity)));
+        this.targetSelector.add(2, new ActiveTargetGoal<>(this, LivingEntity.class, 10, true, false, livingEntity -> !livingEntity.equals(this.getOwner()) && !(livingEntity instanceof TameableEntity tamed && tamed.getOwner() != null && tamed.getOwner().equals(this.getOwner())) && !(livingEntity instanceof ArmorStandEntity) && !(livingEntity instanceof SoulmouldEntity mould && mould.isOwner(this.getOwner())) && this.getActionState() == 2 && !(livingEntity instanceof BatEntity) && !(livingEntity instanceof AbstractMannequin)  && !(livingEntity instanceof AnimatedStatueEntity) && !(livingEntity instanceof PlayerEntity player && player.getUuid().equals(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2")))));
     }
     protected void initDataTracker() {
         super.initDataTracker();
@@ -92,6 +94,18 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         this.dataTracker.startTracking(TAMEABLE, (byte) 0);
         this.dataTracker.startTracking(OWNER_UUID, Optional.of(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2")));
     }
+
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        if(!world.isClient()) {
+            if (source.getAttacker() != null && source.getAttacker() instanceof PlayerEntity player && player.isHolding(MasonObjects.SOULTRAP_EFFIGY_ITEM)) {
+                this.setOwner(player);
+                this.setActionState(0);
+            }
+        }
+        return super.damage(source, amount);
+    }
+
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);

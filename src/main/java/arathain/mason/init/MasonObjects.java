@@ -8,7 +8,6 @@ import arathain.mason.entity.SoulmouldEntity;
 import arathain.mason.item.BoneflySkullItem;
 import arathain.mason.item.SoulmouldItem;
 import arathain.mason.item.SoultrapEffigyItem;
-import net.fabricmc.fabric.api.biome.v1.NetherBiomes;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -25,8 +24,6 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.NetherPlacedFeatures;
-import net.minecraft.world.gen.feature.OrePlacedFeatures;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
