@@ -95,16 +95,16 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         this.dataTracker.startTracking(OWNER_UUID, Optional.of(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2")));
     }
 
-    @Override
-    public boolean damage(DamageSource source, float amount) {
-        if(!world.isClient()) {
-            if (source.getAttacker() != null && source.getAttacker() instanceof PlayerEntity player && player.isHolding(MasonObjects.SOULTRAP_EFFIGY_ITEM)) {
-                this.setOwner(player);
-                this.setActionState(0);
-            }
-        }
-        return super.damage(source, amount);
-    }
+//    @Override
+//    public boolean damage(DamageSource source, float amount) {
+//        if(!world.isClient()) {
+//            if (source.getAttacker() != null && source.getAttacker() instanceof PlayerEntity player && player.isHolding(MasonObjects.SOULTRAP_EFFIGY_ITEM)) {
+//                this.setOwner(player);
+//                this.setActionState(0);
+//            }
+//        }
+//        return super.damage(source, amount);
+//    }
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
