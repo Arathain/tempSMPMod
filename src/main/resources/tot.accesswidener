@@ -1,5 +1,4 @@
 accessWidener v1 named
-accessible method net/minecraft/structure/StructurePiece offsetPos (III)Lnet/minecraft/util/math/BlockPos$Mutable;
-accessible method net/minecraft/structure/StrongholdGenerator$Piece generateEntrance (Lnet/minecraft/world/StructureWorldAccess;Ljava/util/Random;Lnet/minecraft/util/math/BlockBox;Lnet/minecraft/structure/StrongholdGenerator$Piece$EntranceType;III)V
-accessible class net/minecraft/structure/StructurePiece$BlockRandomizer
-accessible class net/minecraft/structure/StrongholdGenerator$Piece$EntranceType
+accessible field net/minecraft/entity/Entity vehicle Lnet/minecraft/entity/Entity;
+accessible field net/minecraft/entity/Entity passengerList Lcom/google/common/collect/ImmutableList;
+accessible method net/minecraft/entity/Entity canAddPassenger (Lnet/minecraft/entity/Entity;)Z

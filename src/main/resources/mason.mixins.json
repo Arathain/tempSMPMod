@@ -4,6 +4,9 @@
   "package": "arathain.mason.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AbstractFireBlockMixin",
+    "CampfireBlockMixin",
+    "EntityAccessor",
     "PlayerEntityMixin"
   ],
   "client": [

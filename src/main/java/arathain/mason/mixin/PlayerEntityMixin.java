@@ -1,11 +1,16 @@
 package arathain.mason.mixin;
 
+import arathain.mason.entity.BoneflyEntity;
 import arathain.mason.init.MasonObjects;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
@@ -16,20 +21,43 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Shadow public abstract PlayerInventory getInventory();
 
+    @Shadow protected boolean isSubmergedInWater;
+
+    @Shadow @Final private PlayerAbilities abilities;
+
+    @Shadow public abstract boolean isInvulnerableTo(DamageSource damageSource);
+
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
-
+    @Inject(method = "shouldDismount", at = @At("HEAD"), cancellable = true)
+    private void webbingScuffedry(CallbackInfoReturnable<Boolean> cir) {
+        if(this.getVehicle() instanceof BoneflyEntity && !this.getVehicle().getFirstPassenger().equals(this)) {
+            cir.setReturnValue(false);
+        }
+    }
+    @Inject(method = "damage", at = @At("HEAD"))
+    private void submergedDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && this.isSubmergedInWater && !isInvulnerableTo(source) && !this.isDead() && random.nextInt(6) == 1) {
+            super.damage(source, amount);
+            this.timeUntilRegen = 0;
+        }
+    }
 
     @Override
     public EntityGroup getGroup() {

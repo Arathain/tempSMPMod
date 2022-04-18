@@ -854,49 +854,12 @@
               "easing": "easeInExpo"
             }
           }
-        },
-        "tail": {
-          "rotation": {
-            "0.0": {
-              "vector": [5, 0, 0]
-            },
-            "1.0": {
-              "vector": [-5, 0, 0],
-              "easing": "easeInOutSine"
-            },
-            "1.9583": {
-              "vector": [5, 0, 0],
-              "easing": "easeInOutSine"
-            }
-          }
-        },
-        "tailjoint": {
-          "rotation": {
-            "0.0": {
-              "vector": [0, 0, 0]
-            },
-            "0.5": {
-              "vector": [3, 0, 0],
-              "easing": "easeOutSine"
-            },
-            "1.0": {
-              "vector": [0, 0, 0],
-              "easing": "easeInSine"
-            },
-            "1.5": {
-              "vector": [-3, 0, 0],
-              "easing": "easeOutSine"
-            },
-            "2.0": {
-              "vector": [0, 0, 0],
-              "easing": "easeInSine"
-            }
-          }
         }
       }
     },
     "stab": {
       "animation_length": 0.5,
+      "override_previous_animation": true,
       "bones": {
         "tail": {
           "rotation": {
@@ -938,21 +901,22 @@
     },
     "stabIdle": {
       "loop": true,
+      "override_previous_animation": true,
       "animation_length": 0.04167,
       "bones": {
         "tail": {
           "rotation": {
-            "vector": [-10, 0, 0]
+            "vector": [-20, 0, 0]
           }
         },
         "tailjoint": {
           "rotation": {
-            "vector": [-60, 0, 0]
+            "vector": [-70, 0, 0]
           }
         },
         "scythe": {
           "rotation": {
-            "vector": [-40, 0, 0]
+            "vector": [-50, 0, 0]
           }
         }
       }
