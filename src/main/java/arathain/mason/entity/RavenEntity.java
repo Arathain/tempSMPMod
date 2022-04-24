@@ -192,13 +192,13 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
         if(stack.getItem().equals(Items.BUNDLE) && stack.hasCustomName()) {
             if (!this.world.isClient) {
                 this.setStackInHand(Hand.MAIN_HAND, stack);
-                player.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+                player.setStackInHand(hand, ItemStack.EMPTY);
             }
             return ActionResult.success(this.world.isClient);
         }
         if(stack.isEmpty() && this.getStackInHand(Hand.MAIN_HAND).getItem().equals(Items.BUNDLE) && !player.isSneaking()) {
             if (!this.world.isClient) {
-                player.setStackInHand(Hand.MAIN_HAND, this.getStackInHand(Hand.MAIN_HAND));
+                player.setStackInHand(hand, this.getStackInHand(Hand.MAIN_HAND));
                 this.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
             }
             return ActionResult.success(this.world.isClient);
