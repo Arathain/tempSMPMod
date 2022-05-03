@@ -1,10 +1,7 @@
 package arathain.mason.init;
 
 import arathain.mason.MasonDecor;
-import arathain.mason.entity.AnimatedStatueEntity;
-import arathain.mason.entity.BoneflyEntity;
-import arathain.mason.entity.RavenEntity;
-import arathain.mason.entity.SoulmouldEntity;
+import arathain.mason.entity.*;
 import arathain.mason.item.BoneflySkullItem;
 import arathain.mason.item.SoulmouldItem;
 import arathain.mason.item.SoultrapEffigyItem;
@@ -44,6 +41,7 @@ public class MasonObjects {
     public static final EntityType<SoulmouldEntity> SOULMOULD = createEntity("soulmould", SoulmouldEntity.createSoulmouldAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SoulmouldEntity::new).dimensions(EntityDimensions.fixed(0.85F, 2.7F)).fireImmune().build());
     public static final EntityType<BoneflyEntity> BONEFLY = createEntity("bonefly", BoneflyEntity.createBoneflyAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BoneflyEntity::new).dimensions(EntityDimensions.changing(1.4F, 2.1F)).fireImmune().build());
     public static final EntityType<AnimatedStatueEntity> STATUE = createEntity("statue", AnimatedStatueEntity.createStatueAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, AnimatedStatueEntity::new).dimensions(EntityDimensions.fixed(0.5F, 2.0F)).fireImmune().build());
+    public static final EntityType<SoulExplosionEntity> SOUL_EXPLOSION = createEntity("soul_explosion", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SoulExplosionEntity::new).trackRangeBlocks(10).dimensions(EntityDimensions.fixed(0.9f, 1.8F)).build());
 
     private static <T extends Entity> EntityType<T> createEntity(String name, EntityType<T> type) {
 

@@ -1,9 +1,11 @@
 package arathain.mason.mixin;
 
 import arathain.mason.entity.BoneflyEntity;
+import arathain.mason.entity.SoulExplosionEntity;
 import arathain.mason.init.MasonObjects;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -15,6 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
@@ -24,9 +27,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.ExplosionBehavior;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -38,6 +44,9 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Shadow protected boolean isSubmergedInWater;
 
+    @Unique
+    private int soultrapTicks;
+
     @Shadow @Final private PlayerAbilities abilities;
 
     @Shadow public abstract boolean isInvulnerableTo(DamageSource damageSource);
@@ -45,6 +54,25 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
+
+    @Override
+    protected boolean tryUseTotem(DamageSource source) {
+        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (source.getAttacker() instanceof PlayerEntity || source.getSource() instanceof PlayerEntity) && !(soultrapTicks >= 10)) {
+            this.setHealth(1.0F);
+            this.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 400, 2, true, false));
+            ++this.soultrapTicks;
+            return true;
+        } else {
+            if(soultrapTicks >= 10) {
+                this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 6.0f, Explosion.DestructionType.NONE);
+                SoulExplosionEntity entity = new SoulExplosionEntity(MasonObjects.SOUL_EXPLOSION, this.world);
+                entity.setPosition(this.getPos());
+                this.world.spawnEntity(entity);
+            }
+            return super.tryUseTotem(source);
+        }
+    }
+
     @Inject(method = "shouldDismount", at = @At("HEAD"), cancellable = true)
     private void webbingScuffedry(CallbackInfoReturnable<Boolean> cir) {
         if(this.getVehicle() instanceof BoneflyEntity && !this.getVehicle().getFirstPassenger().equals(this)) {
