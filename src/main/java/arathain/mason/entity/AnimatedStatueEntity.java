@@ -109,6 +109,7 @@ public class AnimatedStatueEntity extends HostileEntity implements TameableHosti
 
         nbt.put("Items", listTag);
     }
+
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
@@ -397,9 +398,23 @@ public class AnimatedStatueEntity extends HostileEntity implements TameableHosti
         return !this.isRemoved();
     }
 
+    private void breakMannequin(DamageSource source) {
+        this.drop(source);
+
+        for(int i = 0; i < this.inventory.size(); ++i) {
+            ItemStack stack = this.inventory.getStack(i);
+            if (!stack.isEmpty()) {
+                Block.dropStack(this.world, this.getBlockPos().up(), stack);
+                this.inventory.setStack(i, ItemStack.EMPTY);
+            }
+        }
+
+    }
+
     @Override
     public void onDeath(DamageSource source) {
         Block.dropStack(this.world, this.getBlockPos(), MannequinsItems.STATUE.get().getDefaultStack());
+        this.breakMannequin(source);
         super.onDeath(source);
     }
 
