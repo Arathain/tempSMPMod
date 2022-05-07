@@ -20,6 +20,7 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +29,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.ServerConfigHandler;
-import net.minecraft.server.command.GiveCommand;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -249,9 +249,14 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
     protected void playStepSound(BlockPos pos, BlockState state) {
         playSound(SoundEvents.ENTITY_PARROT_STEP, 0.15f, 1);
     }
+    @Override
+    public boolean isPushable() {
+        return true;
+    }
 
     @Override
     protected void addFlapEffects() {
+        if(!isSitting())
         playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1);
     }
 

@@ -10,6 +10,8 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.EntityDamageSource;
+import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerAbilities;
@@ -54,10 +56,14 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
+    private boolean isCorrectDamageSource(DamageSource source) {
+        return (source instanceof EntityDamageSource esource && esource.getAttacker() instanceof PlayerEntity) || (source instanceof ProjectileDamageSource psource && psource.getAttacker() != null && psource.getAttacker() instanceof PlayerEntity) || soultrapTicks > 0;
+    }
 
     @Override
     protected boolean tryUseTotem(DamageSource source) {
-        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (source.getAttacker() instanceof PlayerEntity || source.getSource() instanceof PlayerEntity) && !(soultrapTicks >= 10)) {
+        //TODO the false is temp
+        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && isCorrectDamageSource(source) && !(soultrapTicks >= 10) && false) {
             this.setHealth(1.0F);
             this.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 400, 2, true, false));
             ++this.soultrapTicks;
