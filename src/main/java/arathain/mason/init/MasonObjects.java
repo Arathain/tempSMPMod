@@ -37,6 +37,7 @@ public class MasonObjects {
     public static final Item BONEFLY_SKULL = createItem("bonefly_skull", new BoneflySkullItem(new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.DECORATIONS).maxCount(16)));
     public static final Item SOULTRAP_EFFIGY_ITEM = createItem("soultrap_effigy", new SoultrapEffigyItem(new FabricItemSettings().fireproof().rarity(Rarity.RARE).maxCount(1)));
 
+    public static final EntityType<ChainsEntity> CHAINS = createEntity("chains", RavenEntity.createRavenAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MISC, ChainsEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.8F)).build());
     public static final EntityType<RavenEntity> RAVEN = createEntity("raven", RavenEntity.createRavenAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RavenEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.4F)).build());
     public static final EntityType<SoulmouldEntity> SOULMOULD = createEntity("soulmould", SoulmouldEntity.createSoulmouldAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SoulmouldEntity::new).dimensions(EntityDimensions.fixed(0.85F, 2.7F)).fireImmune().build());
     public static final EntityType<BoneflyEntity> BONEFLY = createEntity("bonefly", BoneflyEntity.createBoneflyAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BoneflyEntity::new).dimensions(EntityDimensions.changing(1.4F, 2.1F)).fireImmune().build());

@@ -28,6 +28,7 @@ public class MasonDecorClient implements ClientModInitializer {
         EntityRendererRegistry.register(MasonObjects.BONEFLY, BoneflyEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.RAVEN, RavenEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.STATUE, AnimatedStatueRenderer::new);
+        EntityRendererRegistry.register(MasonObjects.CHAINS, ChainsEntityRenderer::new);
         DESCEND = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.mason.descend", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.

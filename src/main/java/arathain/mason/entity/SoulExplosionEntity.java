@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.command.FillCommand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
@@ -59,7 +60,7 @@ public class SoulExplosionEntity extends Entity {
                         (random.nextFloat()-0.5f) / 4, 3f + random.nextFloat(), (random.nextFloat()-0.5f) / 4);
             }
         } else {
-            this.world.createExplosion(this, this.getX() + random.nextGaussian() * 3, this.getY() - MathHelper.abs((float) random.nextGaussian()) * 24 + 10, this.getZ() + random.nextGaussian() * 3, 9.0f, true, Explosion.DestructionType.DESTROY);
+            this.world.createExplosion(this, this.getX() + random.nextFloat() * 12, this.getY() - (MathHelper.abs((float) random.nextFloat()) * 120) + 10, this.getZ() + random.nextFloat() * 12, 10.0f, true, Explosion.DestructionType.DESTROY);
             if(this.age > 600) {
                 this.world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
                 LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);

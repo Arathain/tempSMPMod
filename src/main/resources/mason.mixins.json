@@ -6,9 +6,12 @@
   "mixins": [
     "AbstractFireBlockMixin",
     "AbstractMannequinEntityMixin",
+    "BipedEntityModelMixin",
     "CampfireBlockMixin",
     "EntityAccessor",
-    "PlayerEntityMixin"
+    "LivingEntityRendererMixin",
+    "PlayerEntityMixin",
+    "PlayerManagerMixin"
   ],
   "client": [
   ],

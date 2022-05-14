@@ -1,10 +1,13 @@
 package arathain.mason.mixin;
 
 import arathain.mason.entity.BoneflyEntity;
+import arathain.mason.entity.ChainsEntity;
 import arathain.mason.entity.SoulExplosionEntity;
 import arathain.mason.init.MasonObjects;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.client.render.entity.PlayerEntityRenderer;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -47,7 +50,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     @Shadow protected boolean isSubmergedInWater;
 
     @Unique
-    private int soultrapTicks;
+    private int soultrapTicks = 0;
 
     @Shadow @Final private PlayerAbilities abilities;
 
@@ -57,19 +60,25 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
     private boolean isCorrectDamageSource(DamageSource source) {
-        return (source instanceof EntityDamageSource esource && esource.getAttacker() instanceof PlayerEntity) || (source instanceof ProjectileDamageSource psource && psource.getAttacker() != null && psource.getAttacker() instanceof PlayerEntity) || soultrapTicks > 0;
+        return (source instanceof EntityDamageSource esource && esource.getAttacker() instanceof PlayerEntity) || (source instanceof ProjectileDamageSource psource && psource.getAttacker() != null && psource.getAttacker() instanceof PlayerEntity) || source.isFromFalling() || soultrapTicks > 0;
     }
 
     @Override
     protected boolean tryUseTotem(DamageSource source) {
         //TODO the false is temp
-        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && isCorrectDamageSource(source) && !(soultrapTicks >= 10) && false) {
+        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && isCorrectDamageSource(source) && !(soultrapTicks >= 18)) {
+            if(soultrapTicks == 0) {
+                ChainsEntity chains = new ChainsEntity(MasonObjects.CHAINS, this.getWorld());
+                chains.setPosition(this.getPos().add(0, 0.3, 0));
+                this.getWorld().spawnEntity(chains);
+                this.startRiding(chains, true);
+            }
             this.setHealth(1.0F);
             this.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 400, 2, true, false));
             ++this.soultrapTicks;
             return true;
         } else {
-            if(soultrapTicks >= 10) {
+            if(soultrapTicks >= 18) {
                 this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 6.0f, Explosion.DestructionType.NONE);
                 SoulExplosionEntity entity = new SoulExplosionEntity(MasonObjects.SOUL_EXPLOSION, this.world);
                 entity.setPosition(this.getPos());
@@ -81,9 +90,16 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "shouldDismount", at = @At("HEAD"), cancellable = true)
     private void webbingScuffedry(CallbackInfoReturnable<Boolean> cir) {
-        if(this.getVehicle() instanceof BoneflyEntity && !this.getVehicle().getFirstPassenger().equals(this)) {
+        if((this.getVehicle() instanceof BoneflyEntity && !this.getVehicle().getFirstPassenger().equals(this)) || this.getVehicle() instanceof ChainsEntity) {
             cir.setReturnValue(false);
         }
+    }
+    @Override
+    public boolean isSneaking() {
+        if(this.getVehicle() instanceof ChainsEntity) {
+            return false;
+        }
+        return super.isSneaking();
     }
     @Inject(method = "damage", at = @At("HEAD"))
     private void submergedDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
