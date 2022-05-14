@@ -17,12 +17,17 @@ public class ChainsEntityRenderer extends GeoEntityRenderer<ChainsEntity> {
     }
 
     @Override
-    public void render(ChainsEntity entity, float entityYaw, float partialTicks, MatrixStack stack, VertexConsumerProvider bufferIn, int packedLightIn) {
-        super.render(entity, entityYaw, partialTicks, stack, bufferIn, 15728880);
+    public void render(ChainsEntity chainsEntity, float entityYaw, float partialTicks, MatrixStack stack, VertexConsumerProvider provider, int packedLightIn) {
+        super.render(chainsEntity, entityYaw, partialTicks, stack, provider, 15728880);
     }
 
     @Override
     public RenderLayer getRenderType(ChainsEntity animatable, float partialTicks, MatrixStack stack, VertexConsumerProvider renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, Identifier textureLocation) {
-        return RenderLayer.getBeaconBeam(textureLocation, true);
+        return RenderLayer.getEntityTranslucent(this.getTexture(animatable));
+    }
+
+    @Override
+    public Identifier getTexture(ChainsEntity chainsEntity) {
+        return this.getTextureLocation(chainsEntity);
     }
 }
