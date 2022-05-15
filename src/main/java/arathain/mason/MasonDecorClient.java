@@ -38,7 +38,7 @@ public class MasonDecorClient implements ClientModInitializer {
         ClientTickEvents.END_WORLD_TICK.register(world -> {
             PlayerEntity player = MinecraftClient.getInstance().player;
             if (player != null) {
-                UpdatePressingUpDownPacket.send(MinecraftClient.getInstance().options.keyJump.isPressed(), DESCEND.isPressed());
+                UpdatePressingUpDownPacket.send(MinecraftClient.getInstance().options.jumpKey.isPressed(), DESCEND.isPressed());
 
             }
         });

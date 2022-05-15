@@ -23,8 +23,10 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -66,7 +68,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     @Override
     protected boolean tryUseTotem(DamageSource source) {
         //TODO the false is temp
-        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && isCorrectDamageSource(source) && !(soultrapTicks >= 18)) {
+        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && isCorrectDamageSource(source) && !(soultrapTicks >= 18) && false) {
             if(soultrapTicks == 0) {
                 ChainsEntity chains = new ChainsEntity(MasonObjects.CHAINS, this.getWorld());
                 chains.setPosition(this.getPos().add(0, 0.3, 0));
@@ -126,7 +128,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Override
     public boolean hurtByWater() {
-        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (this.getWorld().getBiome(this.getBlockPos()).getCategory() == Biome.Category.RIVER || isInFlowingFluid(FluidTags.WATER))) {
+        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (this.getWorld().getBiome(this.getBlockPos()).isIn(BiomeTags.IS_RIVER) || isInFlowingFluid(FluidTags.WATER))) {
             return true;
         }
         return super.hurtByWater();
@@ -139,7 +141,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         }
         return super.canHaveStatusEffect(effect);
     }
-    private boolean isInFlowingFluid(Tag<Fluid> tag) {
+    private boolean isInFlowingFluid(TagKey<Fluid> tag) {
         if (this.isRegionUnloaded()) {
             return false;
         }

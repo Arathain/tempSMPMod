@@ -1,17 +1,13 @@
 package arathain.mason.entity;
 
 import arathain.mason.init.MasonObjects;
-import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.command.FillCommand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
