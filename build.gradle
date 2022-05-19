@@ -38,7 +38,9 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "curse.maven:mannequins-488506:${project.mannequins_version}"
 	modImplementation "curse.maven:pollen-544350:${project.pollen_version}"
-	// Reach Entity Attributes
+	modCompileOnly "io.github.ladysnake:automatone:0.7.0"
+	modRuntimeOnly "io.github.ladysnake:automatone:0.7.0"
+
 	modImplementation include ("com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"), {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
