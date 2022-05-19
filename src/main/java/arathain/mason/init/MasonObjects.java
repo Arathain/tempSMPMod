@@ -2,9 +2,7 @@ package arathain.mason.init;
 
 import arathain.mason.MasonDecor;
 import arathain.mason.entity.*;
-import arathain.mason.item.BoneflySkullItem;
-import arathain.mason.item.SoulmouldItem;
-import arathain.mason.item.SoultrapEffigyItem;
+import arathain.mason.item.*;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -14,6 +12,7 @@ import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -33,6 +32,7 @@ public class MasonObjects {
     public static final Block TORCHLIGHT = createBlock("torchlight", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(1.5F, 6.0F).sounds(BlockSoundGroup.LANTERN).luminance((blockState) -> 15)), true);
     public static final Block SOULLIGHT = createBlock("soullight", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(1.5F, 6.0F).sounds(BlockSoundGroup.LANTERN).luminance((blockState) -> 11)), true);
 
+    public static final Item GLAIVE = createItem("glaive", new GlaiveItem(2, -2.5f, new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.COMBAT).maxCount(1)));
     public static final Item SOULMOULD_ITEM = createItem("soulmould", new SoulmouldItem(new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.DECORATIONS).maxCount(16)));
     public static final Item BONEFLY_SKULL = createItem("bonefly_skull", new BoneflySkullItem(new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.DECORATIONS).maxCount(16)));
     public static final Item SOULTRAP_EFFIGY_ITEM = createItem("soultrap_effigy", new SoultrapEffigyItem(new FabricItemSettings().fireproof().rarity(Rarity.RARE).maxCount(1)));

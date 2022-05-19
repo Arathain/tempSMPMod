@@ -9,6 +9,7 @@
     "BipedEntityModelMixin",
     "CampfireBlockMixin",
     "EntityAccessor",
+    "ItemRendererMixin",
     "LivingEntityRendererMixin",
     "PlayerEntityMixin"
   ],

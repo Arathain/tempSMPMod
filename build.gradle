@@ -18,6 +18,7 @@ repositories {
 		name = "Curse"
 		url = "https://www.cursemaven.com"
 	}
+	maven { url "https://maven.jamieswhiteshirt.com/libs-release/" }
 	maven {
 		name "cardinal components, impersonate, player ability lib, trinkets"
 		url "https://ladysnake.jfrog.io/artifactory/mods"
@@ -37,6 +38,10 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "curse.maven:mannequins-488506:${project.mannequins_version}"
 	modImplementation "curse.maven:pollen-544350:${project.pollen_version}"
+	// Reach Entity Attributes
+	modImplementation include ("com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"), {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
 }
 
 processResources {
