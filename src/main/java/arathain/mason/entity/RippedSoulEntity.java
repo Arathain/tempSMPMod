@@ -101,7 +101,7 @@ public class RippedSoulEntity extends HostileEntity {
 
     @Override
     public Text getName() {
-        return this.getOwner().getName();
+        return this.getOwner().getName() == null ? super.getName() : this.getOwner().getName();
     }
 
     @Override
