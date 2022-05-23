@@ -1,6 +1,7 @@
 package arathain.mason;
 
 import arathain.mason.init.MasonObjects;
+import arathain.mason.util.GlaivePacket;
 import arathain.mason.util.UpdatePressingUpDownPacket;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -20,6 +21,7 @@ public class MasonDecor implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		MasonObjects.init();
+		ServerPlayNetworking.registerGlobalReceiver(GlaivePacket.ID, GlaivePacket::handle);
 		BiomeModifications.addSpawn(BiomeSelectors.categories(Biome.Category.FOREST), SpawnGroup.CREATURE, MasonObjects.RAVEN, 8, 2, 5);
 		ServerPlayNetworking.registerGlobalReceiver(UpdatePressingUpDownPacket.ID, UpdatePressingUpDownPacket::handle);
 

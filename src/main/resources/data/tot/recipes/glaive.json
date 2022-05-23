@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " GS",
+    " IM",
+    "I  "
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:netherite_sword"
+    },
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "I": {
+      "item": "minecraft:stick"
+    },
+    "M": {
+      "item": "mason:soultrap_effigy"
+    }
+  },
+  "result": {
+    "item": "mason:glaive"
+  }
+}

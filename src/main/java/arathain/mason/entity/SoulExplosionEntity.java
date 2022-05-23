@@ -1,6 +1,8 @@
 package arathain.mason.entity;
 
 import arathain.mason.init.MasonObjects;
+import ladysnake.illuminations.client.Illuminations;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -23,6 +25,11 @@ public class SoulExplosionEntity extends Entity {
     public void tick() {
         super.tick();
         if (world.isClient()) {
+            if(this.age < 200 && FabricLoader.getInstance().isModLoaded("illuminations")) {
+                if (this.age % 4 == 0) {
+                    this.getWorld().addParticle(Illuminations.WILL_O_WISP, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
+                }
+            }
             for (int i = 1; i < (8); i++) {
                 this.getEntityWorld().addImportantParticle(ParticleTypes.LARGE_SMOKE,
                         this.getX() + random.nextGaussian(),
@@ -56,7 +63,7 @@ public class SoulExplosionEntity extends Entity {
                         (random.nextFloat()-0.5f) / 4, 3f + random.nextFloat(), (random.nextFloat()-0.5f) / 4);
             }
         } else {
-            this.world.createExplosion(this, this.getX() + random.nextFloat() * 12, this.getY() - (MathHelper.abs((float) random.nextFloat()) * 120) + 10, this.getZ() + random.nextFloat() * 12, 10.0f, true, Explosion.DestructionType.DESTROY);
+            this.world.createExplosion(this, this.getX() + (random.nextFloat()-0.5f) * 12, this.getY() - (MathHelper.abs((float) random.nextFloat()) * 120) + 10, this.getZ() + (random.nextFloat()-0.5f) * 12, 10.0f, true, Explosion.DestructionType.DESTROY);
             if(this.age > 600) {
                 this.world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
                 LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);

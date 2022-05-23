@@ -31,6 +31,7 @@ public class MasonDecorClient implements ClientModInitializer {
         initParticles();
         EntityRendererRegistry.register(MasonObjects.SOULMOULD, SoulmouldEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.SOUL_EXPLOSION, SoulExplosionRenderer::new);
+        EntityRendererRegistry.register(MasonObjects.RIPPED_SOUL, RippedSoulEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.BONEFLY, BoneflyEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.RAVEN, RavenEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.STATUE, AnimatedStatueRenderer::new);

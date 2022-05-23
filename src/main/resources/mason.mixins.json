@@ -10,7 +10,9 @@
     "CampfireBlockMixin",
     "EntityAccessor",
     "ItemRendererMixin",
+    "LivingEntityMixin",
     "LivingEntityRendererMixin",
+    "MinecraftClientMixin",
     "PlayerEntityMixin"
   ],
   "client": [

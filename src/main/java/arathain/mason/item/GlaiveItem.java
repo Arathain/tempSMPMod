@@ -37,8 +37,8 @@ public class GlaiveItem extends SwordItem {
         ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
         builder.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_ID, "Tool modifier", this.attackDamage, EntityAttributeModifier.Operation.ADDITION));
         builder.put(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_ID, "Tool modifier", attackSpeed, EntityAttributeModifier.Operation.ADDITION));
-        builder.put(ReachEntityAttributes.REACH, new EntityAttributeModifier("Attack range", 1.5D, EntityAttributeModifier.Operation.ADDITION));
-        builder.put(ReachEntityAttributes.ATTACK_RANGE, new EntityAttributeModifier("Attack range", 1.5D, EntityAttributeModifier.Operation.ADDITION));
+        builder.put(ReachEntityAttributes.REACH, new EntityAttributeModifier("Attack range", 1.2D, EntityAttributeModifier.Operation.ADDITION));
+        builder.put(ReachEntityAttributes.ATTACK_RANGE, new EntityAttributeModifier("Attack range", 1.2D, EntityAttributeModifier.Operation.ADDITION));
         this.attributeModifiers = builder.build();
     }
     @Override
@@ -48,9 +48,11 @@ public class GlaiveItem extends SwordItem {
 
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        target.damage(SoulRipDamageSource.SOUL_RIP, this.attackDamage);
-        if(attacker instanceof PlayerEntity player)
+
+        if(attacker instanceof PlayerEntity player) {
             player.spawnSweepAttackParticles();
+            target.damage(SoulRipDamageSource.playerRip(player), this.attackDamage);
+        }
         return super.postHit(stack, target, attacker);
     }
 
@@ -59,15 +61,14 @@ public class GlaiveItem extends SwordItem {
         ItemStack stack = player.getMainHandStack();
         if(!player.getItemCooldownManager().isCoolingDown(MasonObjects.GLAIVE)) {
             float yaw = player.getYaw() * 0.017453292F;
-            Vec3d pos = player.getPos().add(-MathHelper.sin(yaw) * 1.5D, player.getHeight() / 2D, MathHelper.cos(yaw) * 1.5D);
-            List<LivingEntity> targets = player.world.getEntitiesByClass(LivingEntity.class, Box.from(pos).offset(-0.5D, -0.5D, -0.5D).expand(2.5D, 0.25D, 2.5D), EntityPredicates.EXCEPT_SPECTATOR);
-
+            Vec3d pos = player.getPos().add(-MathHelper.sin(yaw) * 1.4D, player.getHeight() / 2D, MathHelper.cos(yaw) * 1.4D);
+            List<LivingEntity> targets = player.world.getEntitiesByClass(LivingEntity.class, Box.from(pos).offset(-0.5D, -0.5D, -0.5D).expand(3D, 1D, 3D), EntityPredicates.EXCEPT_SPECTATOR);
             stack.damage(1, player, entity -> entity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 
             targets.forEach(target -> {
-                if (target != player) {
+                if (target != player && player.squaredDistanceTo(target) > 6.0 && player.squaredDistanceTo(target) < 36.0) {
                     target.takeKnockback(0.4D, MathHelper.sin(player.getYaw() * 0.0175F), -MathHelper.cos(player.getYaw() * 0.0175F));
-                    target.damage(SoulRipDamageSource.SOUL_RIP, this.attackDamage);
+                    target.damage(SoulRipDamageSource.playerRip(player), this.attackDamage);
                 }
             });
             player.world.playSoundFromEntity(null, player, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, player.getSoundCategory(), 1F, 1F);
@@ -81,9 +82,9 @@ public class GlaiveItem extends SwordItem {
     }
     private void spawnSweepAttackParticles(PlayerEntity player) {
         if (player.world instanceof ServerWorld) {
-            for(int i = 0; i <= 4; i++) {
-                double d = -MathHelper.sin((player.getYaw() + i*40 - 80) * ((float)Math.PI / 180));
-                double e = MathHelper.cos((player.getYaw() + i*40 - 80) * ((float)Math.PI / 180));
+            for(int i = 0; i <= 6; i++) {
+                double d = -MathHelper.sin((player.getYaw() + i*20 - 60) * ((float)Math.PI / 180)) * 3;
+                double e = MathHelper.cos((player.getYaw() + i*20 - 60) * ((float)Math.PI / 180)) * 3;
                 ((ServerWorld) player.world).spawnParticles(ParticleTypes.SWEEP_ATTACK, player.getX() + d, player.getBodyY(0.5), player.getZ() + e, 0, d, 0.0, e, 0.0);
             }
         }
