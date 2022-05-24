@@ -5,6 +5,7 @@ import arathain.mason.entity.goal.RavenDeliverBundleGoal;
 import arathain.mason.entity.goal.RavenFollowOwnerGoal;
 import arathain.mason.init.MasonObjects;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.*;
@@ -30,10 +31,13 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -59,6 +63,9 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
         super(type, world);
         moveControl = new FlightMoveControl(this, 90, false);
     }
+    public float maxWingDeviation;
+    public float prevMaxWingDeviation;
+    private float whuhhuh = 1.0f;
     @Override
     protected void initGoals() {
         goalSelector.add(1, new SwimGoal(this));
@@ -258,6 +265,17 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
     protected void addFlapEffects() {
         if(!isSitting())
         playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1);
+        this.whuhhuh = this.speed + this.maxWingDeviation / 2.0f;
+    }
+    @Override
+    public void tickMovement() {
+        super.tickMovement();
+        this.flapWings();
+    }
+    private void flapWings() {
+        this.prevMaxWingDeviation = this.maxWingDeviation;
+        this.maxWingDeviation += (float)(this.onGround || this.hasVehicle() ? -1 : 4) * 0.3f;
+        this.maxWingDeviation = MathHelper.clamp(this.maxWingDeviation, 0.0f, 1.0f);
     }
 
     @Override
@@ -271,7 +289,7 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
 
     @Override
     protected boolean hasWings() {
-        return true;
+        return this.speed > this.whuhhuh;
     }
 
 
@@ -355,6 +373,18 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
             }
             return super.damage(source, amount);
         }
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return MasonObjects.ENTITY_RAVEN_CAW;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return MasonObjects.ENTITY_RAVEN_CAW;
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -18,12 +19,14 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -121,6 +124,14 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
         return getDataTracker().get(DORMANT);
     }
 
+    @Override
+    protected void addFlapEffects() {
+        playSound(SoundEvents.ENTITY_PARROT_FLY, 4f, 1);
+    }
+    @Override
+    protected boolean hasWings() {
+        return this.isInAir();
+    }
     @Override
     public EntityGroup getGroup() {
         return EntityGroup.UNDEAD;
@@ -271,7 +282,7 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
         return super.damage(source, amount);
     }
     public boolean isInAir() {
-        return isHighEnough((int) stepHeight + 1);
+        return this.isHighEnough((int) stepHeight + 1);
     }
 
     public boolean isHighEnough(int altitude) {
