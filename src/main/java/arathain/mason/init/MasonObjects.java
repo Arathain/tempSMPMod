@@ -12,7 +12,6 @@ import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -32,9 +31,14 @@ public class MasonObjects {
     private static final Map<SoundEvent, Identifier> SOUND_EVENTS = new LinkedHashMap<>();
 
     public static final SoundEvent ENTITY_RAVEN_CAW = createSoundEvent("entity.raven.caw");
+    public static final SoundEvent ENTITY_SOULMOULD_AMBIENT = createSoundEvent("entity.soulmould.ambient");
+    public static final SoundEvent ENTITY_SOULMOULD_ATTACK = createSoundEvent("entity.soulmould.attack");
+    public static final SoundEvent ENTITY_SOULMOULD_HURT = createSoundEvent("entity.soulmould.hurt");
+    public static final SoundEvent ENTITY_SOULMOULD_DEATH = createSoundEvent("entity.soulmould.death");
 
     public static final Block TORCHLIGHT = createBlock("torchlight", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(1.5F, 6.0F).sounds(BlockSoundGroup.LANTERN).luminance((blockState) -> 15)), true);
     public static final Block SOULLIGHT = createBlock("soullight", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(1.5F, 6.0F).sounds(BlockSoundGroup.LANTERN).luminance((blockState) -> 11)), true);
+    public static final Block MERCHANT_SIMULACRUM = createBlock("merchant_simulacrum", new MerchantSimulacrumBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(4F, 16.0F).dropsNothing().sounds(BlockSoundGroup.ANCIENT_DEBRIS).luminance((blockState) -> 1)), true);
 
     public static final Item GLAIVE = createItem("glaive", new GlaiveItem(4, -3.1f, new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.COMBAT).maxCount(1)));
     public static final Item SOULMOULD_ITEM = createItem("soulmould", new SoulmouldItem(new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.DECORATIONS).maxCount(16)));
@@ -47,7 +51,7 @@ public class MasonObjects {
     public static final EntityType<BoneflyEntity> BONEFLY = createEntity("bonefly", BoneflyEntity.createBoneflyAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BoneflyEntity::new).dimensions(EntityDimensions.changing(1.4F, 2.1F)).fireImmune().build());
     public static final EntityType<AnimatedStatueEntity> STATUE = createEntity("statue", AnimatedStatueEntity.createStatueAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, AnimatedStatueEntity::new).dimensions(EntityDimensions.fixed(0.5F, 2.0F)).fireImmune().build());
     public static final EntityType<SoulExplosionEntity> SOUL_EXPLOSION = createEntity("soul_explosion", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SoulExplosionEntity::new).trackRangeBlocks(10).dimensions(EntityDimensions.fixed(0.9f, 1.8F)).build());
-    public static final EntityType<RippedSoulEntity> RIPPED_SOUL = createEntity("ripped_soul", RippedSoulEntity.createVexAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, RippedSoulEntity::new).dimensions(EntityDimensions.changing(0.9F, 0.9F)).fireImmune().build());
+    public static final EntityType<RippedSoulEntity> RIPPED_SOUL = createEntity("ripped_soul", RippedSoulEntity.createVexAttributes(), FabricEntityTypeBuilder.<RippedSoulEntity>create(SpawnGroup.MONSTER, RippedSoulEntity::new).dimensions(EntityDimensions.changing(0.9F, 0.9F)).fireImmune().build());
 
 
     private static <T extends Entity> EntityType<T> createEntity(String name, EntityType<T> type) {

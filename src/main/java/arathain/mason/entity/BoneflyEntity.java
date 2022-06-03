@@ -12,6 +12,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -126,8 +127,9 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
 
     @Override
     protected void addFlapEffects() {
-        playSound(SoundEvents.ENTITY_PARROT_FLY, 4f, 1);
+        playSound(SoundEvents.ENTITY_ENDER_DRAGON_FLAP, 1f, 1);
     }
+
     @Override
     protected boolean hasWings() {
         return this.isInAir();

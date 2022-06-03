@@ -41,7 +41,7 @@ public class RippedSoulEntity extends HostileEntity {
     private boolean alive;
     private int lifeTicks;
 
-    public RippedSoulEntity(EntityType<? extends HostileEntity> entityType, World world) {
+    public RippedSoulEntity(EntityType<RippedSoulEntity> entityType, World world) {
         super(entityType, world);
         this.moveControl = new VexMoveControl(this);
         this.experiencePoints = 3;
@@ -50,6 +50,16 @@ public class RippedSoulEntity extends HostileEntity {
     @Override
     public boolean canHaveStatusEffect(StatusEffectInstance effect) {
         return effect.getEffectType() == StatusEffects.WITHER || effect.getEffectType() == StatusEffects.INSTANT_DAMAGE || effect.getEffectType() == StatusEffects.INSTANT_HEALTH;
+    }
+
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        if(!world.isClient()) {
+            if (source.isExplosive()) {
+                return false;
+            }
+        }
+        return super.damage(source, amount);
     }
 
     @Override
@@ -84,7 +94,7 @@ public class RippedSoulEntity extends HostileEntity {
         super.tick();
         this.noClip = false;
         this.setNoGravity(true);
-        if(this.age > 600 && random.nextInt(20) == 1 && !this.alive) {
+        if(this.age > 1200 && random.nextInt(20) == 1 && !this.alive) {
             this.alive = true;
         }
         if (this.alive && --this.lifeTicks <= 0) {

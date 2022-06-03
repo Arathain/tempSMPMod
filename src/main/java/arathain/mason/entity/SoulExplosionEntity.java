@@ -6,6 +6,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.NetherStarItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -14,6 +16,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.explosion.Explosion;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public class SoulExplosionEntity extends Entity {
 
@@ -63,7 +68,13 @@ public class SoulExplosionEntity extends Entity {
                         (random.nextFloat()-0.5f) / 4, 3f + random.nextFloat(), (random.nextFloat()-0.5f) / 4);
             }
         } else {
-            this.world.createExplosion(this, this.getX() + (random.nextFloat()-0.5f) * 12, this.getY() - (MathHelper.abs((float) random.nextFloat()) * 120) + 10, this.getZ() + (random.nextFloat()-0.5f) * 12, 10.0f, true, Explosion.DestructionType.DESTROY);
+            this.world.createExplosion(this, this.getX() + (random.nextFloat()-0.5f) * 15, this.getY() - (MathHelper.abs((float) random.nextFloat()) * 140) + 10, this.getZ() + (random.nextFloat()-0.5f) * 15, 12.0f, true, Explosion.DestructionType.DESTROY);
+            if(this.age % 8 == 0) {
+                RippedSoulEntity soul = new RippedSoulEntity(MasonObjects.RIPPED_SOUL, this.getWorld());
+                soul.setOwnerUuid(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2"));
+                soul.setPosition(this.getPos().add(0, 1, 0));
+                this.world.spawnEntity(soul);
+            }
             if(this.age > 600) {
                 this.world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
                 LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);

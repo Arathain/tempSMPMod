@@ -1,6 +1,7 @@
 {
   "block.mason.torchlight": "Torchlight",
   "block.mason.soullight": "Soullight",
+  "block.mason.merchant_simulacrum": "Merchant Simulacrum",
   "item.mason.soulmould": "Mould of Souls",
   "death.attack.soul_rip.player": "%s were temporarily enlisted as a soul warrior.",
   "item.mason.glaive": "Soulcleave Glaive",

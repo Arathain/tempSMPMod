@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "mason:torchlight",
-    "mason:soullight"
+    "mason:soullight",
+    "mason:merchant_simulacrum"
   ]
 }

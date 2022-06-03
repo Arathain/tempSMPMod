@@ -5,6 +5,7 @@ import arathain.mason.init.MasonObjects;
 import arathain.mason.item.GlaiveItemRenderer;
 import arathain.mason.util.UpdatePressingUpDownPacket;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
@@ -15,6 +16,7 @@ import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,6 +31,7 @@ public class MasonDecorClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         initParticles();
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), MasonObjects.MERCHANT_SIMULACRUM);
         EntityRendererRegistry.register(MasonObjects.SOULMOULD, SoulmouldEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.SOUL_EXPLOSION, SoulExplosionRenderer::new);
         EntityRendererRegistry.register(MasonObjects.RIPPED_SOUL, RippedSoulEntityRenderer::new);

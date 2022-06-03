@@ -19,6 +19,7 @@ import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -45,8 +46,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
@@ -66,18 +70,18 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
     private boolean isCorrectDamageSource(DamageSource source) {
-        return (source instanceof EntityDamageSource esource && esource.getAttacker() instanceof PlayerEntity) || (source instanceof ProjectileDamageSource psource && psource.getAttacker() != null && psource.getAttacker() instanceof PlayerEntity) || source.isFromFalling() || soultrapTicks > 0;
+        return (source instanceof EntityDamageSource esource && esource.getAttacker() instanceof PlayerEntity player && player.getUuidAsString().equalsIgnoreCase("1b44461a-f605-4b29-a7a9-04e649d1981c")) || (source instanceof ProjectileDamageSource psource && psource.getAttacker() != null && psource.getAttacker() instanceof PlayerEntity player1 && player1.getUuidAsString().equalsIgnoreCase("1b44461a-f605-4b29-a7a9-04e649d1981c")) || source.isOutOfWorld() || soultrapTicks > 0;
     }
 
     @Override
     protected boolean tryUseTotem(DamageSource source) {
         //TODO the false is temp
-        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && isCorrectDamageSource(source) && !(soultrapTicks >= 18) && false) {
+        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && isCorrectDamageSource(source) && !(soultrapTicks >= 18)) {
             if(soultrapTicks == 0) {
                 ChainsEntity chains = new ChainsEntity(MasonObjects.CHAINS, this.getWorld());
                 chains.setPosition(this.getPos().add(0, 0.3, 0));
-                this.getWorld().spawnEntity(chains);
                 this.startRiding(chains, true);
+                this.getWorld().spawnEntity(chains);
             }
             this.setHealth(1.0F);
             this.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 400, 2, true, false));
@@ -85,7 +89,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             return true;
         } else {
             if(soultrapTicks >= 18) {
-                this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 6.0f, Explosion.DestructionType.NONE);
+                this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 10.0f, Explosion.DestructionType.NONE);
                 SoulExplosionEntity entity = new SoulExplosionEntity(MasonObjects.SOUL_EXPLOSION, this.world);
                 entity.setPosition(this.getPos());
                 this.world.spawnEntity(entity);
@@ -108,11 +112,15 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         }
         return super.isSneaking();
     }
-    @Inject(method = "damage", at = @At("HEAD"))
-    private void submergedDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @ModifyArgs(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+    private void malum$onDamaged(Args args) {
+        DamageSource source = args.get(0);
+        float value = args.get(1);
         if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && this.isSubmergedInWater && !isInvulnerableTo(source) && !this.isDead() && random.nextInt(6) == 1) {
-            super.damage(source, amount);
-            this.timeUntilRegen = 0;
+            args.set(1, value*2);
+        }
+        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && !isCorrectDamageSource(source)) {
+            args.set(1, 0f);
         }
     }
 

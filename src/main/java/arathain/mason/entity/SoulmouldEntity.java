@@ -6,6 +6,7 @@ import arathain.mason.entity.goal.TamedAttackWithOwnerGoal;
 import arathain.mason.entity.goal.TamedTrackAttackerGoal;
 import arathain.mason.init.MasonObjects;
 import gg.moonflower.mannequins.common.entity.AbstractMannequin;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -13,6 +14,7 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -24,11 +26,13 @@ import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.ServerConfigHandler;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -72,7 +76,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     }
 
     public static DefaultAttributeContainer.Builder createSoulmouldAttributes() {
-        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 160).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 19).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f).add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 6f);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 160).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 9).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f).add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 6f);
     }
     @Override
     public boolean canHaveStatusEffect(StatusEffectInstance effect) {
@@ -99,16 +103,30 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         this.dataTracker.startTracking(OWNER_UUID, Optional.of(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2")));
     }
 
-//    @Override
-//    public boolean damage(DamageSource source, float amount) {
-//        if(!world.isClient()) {
-//            if (source.getAttacker() != null && source.getAttacker() instanceof PlayerEntity player && player.isHolding(MasonObjects.SOULTRAP_EFFIGY_ITEM)) {
-//                this.setOwner(player);
-//                this.setActionState(0);
-//            }
-//        }
-//        return super.damage(source, amount);
-//    }
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return MasonObjects.ENTITY_SOULMOULD_HURT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return MasonObjects.ENTITY_SOULMOULD_DEATH;
+    }
+
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        if(!world.isClient()) {
+            if (source.isExplosive()) {
+                amount *= 0.5;
+            }
+        }
+        return super.damage(source, amount);
+    }
+
+    @Override
+    public boolean canFreeze() {
+        return false;
+    }
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -288,15 +306,19 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
             if (!isDormant()) {
                 if ((this.getTarget() == null || (this.getTarget() != null && this.getDormantPos().isPresent() && !this.getDormantPos().get().isWithinDistance(this.getTarget().getPos(), 16))) && forwardSpeed == 0 && this.getNavigation().isIdle() && isAtDormantPos()) {
                     setDormant(true);
+                    this.playSound(MasonObjects.ENTITY_SOULMOULD_AMBIENT, 1f, 1f);
                     this.updatePositionAndAngles(getDormantPos().get().getX() + 0.5, getDormantPos().get().getY(), getDormantPos().get().getZ() + 0.5, this.getYaw(), this.getPitch());
                 }
             } else if (getTarget() != null && squaredDistanceTo(getTarget()) < 100 && dataTracker.get(ACTION_STATE) != 0) {
+                if(activationTicks == 0) {
+                    this.playSound(MasonObjects.ENTITY_SOULMOULD_AMBIENT, 1f, 1f);
+                }
                 activationTicks++;
                 setAttackState(1);
                 if (activationTicks > 60) {
-                    setDormant(false);
-                    setAttackState(0);
-                    activationTicks = 0;
+                    this.setDormant(false);
+                    this.setAttackState(0);
+                    this.activationTicks = 0;
                 }
             }
         }
@@ -307,8 +329,14 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
             setHeadYaw(getDormantDir().asRotation());
             setPitch(0);
         }
-        if ((this.getTarget() == null || (this.getTarget() != null && this.getDormantPos().isPresent() && !this.getDormantPos().get().isWithinDistance(this.getTarget().getPos(), 10))) && getNavigation().isIdle() && !isAtDormantPos() && !isDormant()) updateDormantPos();
+        if ((this.getTarget() == null || (this.getTarget() != null && this.getDormantPos().isPresent() && !this.getTarget().isAlive())) && getNavigation().isIdle() && !isAtDormantPos() && !isDormant()) updateDormantPos();
     }
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        if(world instanceof ServerWorld server)
+        server.getServer().getPlayerManager().sendToAround(null, this.getX(), this.getY(), this.getZ(), 32.0, server.getRegistryKey(), new PlaySoundS2CPacket(SoundEvents.ENTITY_IRON_GOLEM_STEP, this.getSoundCategory(), this.getX(), this.getY(), this.getZ(), 32.0f, 1.0f));
+    }
+
 
     @Override
     public void registerControllers(AnimationData animationData) {
