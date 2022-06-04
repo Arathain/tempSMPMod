@@ -27,6 +27,11 @@ public class SoulExplosionEntity extends Entity {
     }
 
     @Override
+    public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
+        return true;
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (world.isClient()) {

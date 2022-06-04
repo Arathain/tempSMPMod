@@ -14,16 +14,19 @@ import net.minecraft.world.biome.OverworldBiomeCreator;
 import net.minecraft.world.gen.feature.StrongholdFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.bernie.example.GeckoLibMod;
+import software.bernie.geckolib3.GeckoLib;
 
 public class MasonDecor implements ModInitializer {
 	public static final String MODID = "mason";
 
 	@Override
 	public void onInitialize() {
+		GeckoLibMod.DISABLE_IN_DEV = true;
+		GeckoLib.initialize();
 		MasonObjects.init();
 		ServerPlayNetworking.registerGlobalReceiver(GlaivePacket.ID, GlaivePacket::handle);
 		BiomeModifications.addSpawn(BiomeSelectors.categories(Biome.Category.FOREST), SpawnGroup.CREATURE, MasonObjects.RAVEN, 8, 2, 5);
 		ServerPlayNetworking.registerGlobalReceiver(UpdatePressingUpDownPacket.ID, UpdatePressingUpDownPacket::handle);
-
 	}
 }
