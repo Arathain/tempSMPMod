@@ -68,6 +68,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
 
 
+
     @Inject(method = "shouldDismount", at = @At("HEAD"), cancellable = true)
     private void webbingScuffedry(CallbackInfoReturnable<Boolean> cir) {
         if((this.getVehicle() instanceof BoneflyEntity && !this.getVehicle().getFirstPassenger().equals(this)) || this.getVehicle() instanceof ChainsEntity) {
