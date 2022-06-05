@@ -59,43 +59,12 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Shadow protected boolean isSubmergedInWater;
 
-    @Unique
-    private int soultrapTicks = 0;
-
     @Shadow @Final private PlayerAbilities abilities;
 
     @Shadow public abstract boolean isInvulnerableTo(DamageSource damageSource);
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
-    }
-    private boolean isCorrectDamageSource(DamageSource source) {
-        return (source instanceof EntityDamageSource esource && esource.getAttacker() instanceof PlayerEntity player && player.getUuidAsString().equalsIgnoreCase("1b44461a-f605-4b29-a7a9-04e649d1981c")) || (source instanceof ProjectileDamageSource psource && psource.getAttacker() != null && psource.getAttacker() instanceof PlayerEntity player1 && player1.getUuidAsString().equalsIgnoreCase("1b44461a-f605-4b29-a7a9-04e649d1981c")) || source.isOutOfWorld() || soultrapTicks > 0;
-    }
-
-    @Override
-    protected boolean tryUseTotem(DamageSource source) {
-        //TODO the false is temp
-        if (this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && isCorrectDamageSource(source) && !(soultrapTicks >= 18)) {
-            if(soultrapTicks == 0) {
-                ChainsEntity chains = new ChainsEntity(MasonObjects.CHAINS, this.getWorld());
-                chains.setPosition(this.getPos().add(0, 0.3, 0));
-                this.startRiding(chains, true);
-                this.getWorld().spawnEntity(chains);
-            }
-            this.setHealth(1.0F);
-            this.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 400, 2, true, false));
-            ++this.soultrapTicks;
-            return true;
-        } else {
-            if(soultrapTicks >= 18) {
-                this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 10.0f, Explosion.DestructionType.NONE);
-                SoulExplosionEntity entity = new SoulExplosionEntity(MasonObjects.SOUL_EXPLOSION, this.world);
-                entity.setPosition(this.getPos());
-                this.world.spawnEntity(entity);
-            }
-            return super.tryUseTotem(source);
-        }
     }
 
 
@@ -118,9 +87,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         float value = args.get(1);
         if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && this.isSubmergedInWater && !isInvulnerableTo(source) && !this.isDead() && random.nextInt(6) == 1) {
             args.set(1, value*2);
-        }
-        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && !isCorrectDamageSource(source)) {
-            args.set(1, 0f);
         }
     }
 

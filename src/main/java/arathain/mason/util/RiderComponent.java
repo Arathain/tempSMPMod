@@ -34,12 +34,16 @@ public class RiderComponent implements AutoSyncedComponent {
     }
 
     public void setPressingUp(boolean pressingUp) {
+        boolean pressing = pressingUp == this.pressingUp;
         this.pressingUp = pressingUp;
+        if(pressing)
         MasonComponents.RIDER_COMPONENT.sync(entity);
     }
 
     public void setPressingDown(boolean pressingDown) {
+        boolean pressing = pressingDown == this.pressingDown;
         this.pressingDown = pressingDown;
+        if(pressing)
         MasonComponents.RIDER_COMPONENT.sync(entity);
     }
 }
