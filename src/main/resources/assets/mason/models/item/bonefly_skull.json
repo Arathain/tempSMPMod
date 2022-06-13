@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "tot:item/bonefly_skull"
+    "layer0": "mason:item/bonefly_skull"
   }
 }

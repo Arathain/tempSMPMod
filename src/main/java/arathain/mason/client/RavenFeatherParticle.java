@@ -17,7 +17,7 @@ public class RavenFeatherParticle extends AbstractSlowingParticle {
     @Override
     public void tick() {
         if (this.age > this.maxAge / 2) {
-            this.setAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
+            this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
         }
         this.angle = (float) (this.prevAngle + Math.sin(this.age / 20f)/ 10);
         super.tick();

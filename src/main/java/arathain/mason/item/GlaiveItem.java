@@ -5,13 +5,12 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
@@ -20,7 +19,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -49,8 +47,8 @@ public class GlaiveItem extends SwordItem {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(new LiteralText("It is the lament of the fallen").formatted(Formatting.GOLD, Formatting.ITALIC));
-        tooltip.add(new LiteralText("which pushes the living onward.").formatted(Formatting.GOLD, Formatting.ITALIC));
+        tooltip.add(Text.literal("It is the lament of the fallen").formatted(Formatting.GOLD, Formatting.ITALIC));
+        tooltip.add(Text.literal("which pushes the living onward.").formatted(Formatting.GOLD, Formatting.ITALIC));
         super.appendTooltip(stack, world, tooltip, context);
     }
 
@@ -70,16 +68,18 @@ public class GlaiveItem extends SwordItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        ItemStack stack = player.getMainHandStack();
+        ItemStack stack = player.getStackInHand(hand);
         if(!player.getItemCooldownManager().isCoolingDown(MasonObjects.GLAIVE)) {
             float yaw = player.getYaw() * 0.017453292F;
             Vec3d pos = player.getPos().add(-MathHelper.sin(yaw) * 1.4D, player.getHeight() / 2D, MathHelper.cos(yaw) * 1.4D);
             List<LivingEntity> targets = player.world.getEntitiesByClass(LivingEntity.class, Box.from(pos).offset(-0.5D, -0.5D, -0.5D).expand(3D, 1D, 3D), EntityPredicates.EXCEPT_SPECTATOR);
-            stack.damage(1, player, entity -> entity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+            stack.damage(1, player, entity -> entity.sendEquipmentBreakStatus(hand.equals(Hand.MAIN_HAND) ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
 
             targets.forEach(target -> {
                 if (target != player && player.squaredDistanceTo(target) > 6.0 && player.squaredDistanceTo(target) < 36.0) {
-                    target.takeKnockback(0.4D, MathHelper.sin(player.getYaw() * 0.0175F), -MathHelper.cos(player.getYaw() * 0.0175F));
+                    if(!(target instanceof ArmorStandEntity)) {
+                        target.takeKnockback(0.4D, MathHelper.sin(player.getYaw() * 0.0175F), -MathHelper.cos(player.getYaw() * 0.0175F));
+                    }
                     target.damage(SoulRipDamageSource.playerRip(player), this.attackDamage);
                 }
             });

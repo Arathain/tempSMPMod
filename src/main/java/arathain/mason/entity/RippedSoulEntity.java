@@ -15,6 +15,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.ServerConfigHandler;
@@ -85,7 +86,7 @@ public class RippedSoulEntity extends HostileEntity {
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
         this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge(new Class[0]));
         this.targetSelector.add(2, new TrackOwnerTargetGoal(this));
-        this.targetSelector.add(3, new ActiveTargetGoal<>(this, PlayerEntity.class, true, player -> !isOwner(player)));
+        this.targetSelector.add(3, new TargetGoal<>(this, PlayerEntity.class, true, player -> !isOwner(player)));
     }
 
     @Override
@@ -226,17 +227,8 @@ public class RippedSoulEntity extends HostileEntity {
         return SoundEvents.ENTITY_VEX_HURT;
     }
 
-    @Override
-    public float getBrightnessAtEyes() {
-        return 1.0f;
-    }
-
-    @Override
-    @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        this.initEquipment(difficulty);
-        this.updateEnchantments(difficulty);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    public float method_5718() {
+        return 1.0F;
     }
 
     class VexMoveControl
@@ -307,7 +299,7 @@ public class RippedSoulEntity extends HostileEntity {
         }
 
         @Override
-        public boolean shouldRunEveryTick() {
+        public boolean requiresUpdateEveryTick() {
             return true;
         }
 

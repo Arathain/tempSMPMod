@@ -2,53 +2,33 @@ package arathain.mason.mixin;
 
 import arathain.mason.entity.BoneflyEntity;
 import arathain.mason.entity.ChainsEntity;
-import arathain.mason.entity.SoulExplosionEntity;
 import arathain.mason.init.MasonObjects;
-import arathain.mason.item.GlaiveItem;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CampfireBlock;
-import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.particle.ParticleTypes;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagKey;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.explosion.ExplosionBehavior;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
@@ -108,7 +88,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Override
     public boolean hurtByWater() {
-        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (this.getWorld().getBiome(this.getBlockPos()).isIn(BiomeTags.IS_RIVER) || isInFlowingFluid(FluidTags.WATER))) {
+        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (this.getWorld().getBiome(this.getBlockPos()).hasTag(BiomeTags.IS_RIVER) || isInFlowingFluid(FluidTags.WATER))) {
             return true;
         }
         return super.hurtByWater();
@@ -144,7 +124,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                     double e;
                     mutable.set(p, q, r);
                     FluidState fluidState = this.world.getFluidState(mutable);
-                    if (!fluidState.isIn(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, mutable))) >= box.minY) || fluidState.isStill()) continue;
+                    if (!fluidState.isIn(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, mutable))) >= box.minY) || fluidState.isEqualAndStill(Fluids.WATER)) continue;
                     bl2 = true;
                     d = Math.max(e - box.minY, d);
                     if (!bl) continue;

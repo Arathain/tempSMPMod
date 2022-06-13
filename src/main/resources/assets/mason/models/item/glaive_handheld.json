@@ -1,7 +1,7 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "tot:item/glaive_large"
+    "layer0": "mason:item/glaive_large"
   },
   "display": {
     "thirdperson_righthand": {

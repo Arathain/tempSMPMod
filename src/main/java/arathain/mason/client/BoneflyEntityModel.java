@@ -1,5 +1,6 @@
 package arathain.mason.client;
 
+import arathain.mason.MasonDecor;
 import arathain.mason.entity.BoneflyEntity;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
@@ -9,18 +10,18 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 public class BoneflyEntityModel extends AnimatedGeoModel<BoneflyEntity> {
     @Override
-    public Identifier getModelLocation(BoneflyEntity object) {
-        return new Identifier("tot", "geo/entity/bonefly.geo.json");
+    public Identifier getModelResource(BoneflyEntity object) {
+        return new Identifier(MasonDecor.MODID, "geo/entity/bonefly.geo.json");
     }
 
     @Override
-    public Identifier getTextureLocation(BoneflyEntity object) {
-        return new Identifier("tot", "textures/entity/bonefly/bonefly.png");
+    public Identifier getTextureResource(BoneflyEntity object) {
+        return new Identifier(MasonDecor.MODID, "textures/entity/bonefly/bonefly.png");
     }
 
     @Override
-    public Identifier getAnimationFileLocation(BoneflyEntity animatable) {
-        return new Identifier("tot", "animations/entity/bonefly.animation.json");
+    public Identifier getAnimationResource(BoneflyEntity animatable) {
+        return new Identifier(MasonDecor.MODID, "animations/entity/bonefly.animation.json");
     }
 
     @Override

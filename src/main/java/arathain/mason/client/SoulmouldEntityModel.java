@@ -1,5 +1,6 @@
 package arathain.mason.client;
 
+import arathain.mason.MasonDecor;
 import arathain.mason.entity.SoulmouldEntity;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
@@ -9,18 +10,18 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 public class SoulmouldEntityModel extends AnimatedTickingGeoModel<SoulmouldEntity> {
     @Override
-    public Identifier getModelLocation(SoulmouldEntity object) {
-        return new Identifier("tot", "geo/entity/soulmould.geo.json");
+    public Identifier getModelResource(SoulmouldEntity object) {
+        return new Identifier(MasonDecor.MODID, "geo/entity/soulmould.geo.json");
     }
 
     @Override
-    public Identifier getTextureLocation(SoulmouldEntity object) {
-        return new Identifier("tot", "textures/entity/mould/soulmould.png");
+    public Identifier getTextureResource(SoulmouldEntity object) {
+        return new Identifier(MasonDecor.MODID, "textures/entity/mould/soulmould.png");
     }
 
     @Override
-    public Identifier getAnimationFileLocation(SoulmouldEntity animatable) {
-        return new Identifier("tot", "animations/entity/soulmould.animation.json");
+    public Identifier getAnimationResource(SoulmouldEntity animatable) {
+        return new Identifier(MasonDecor.MODID, "animations/entity/soulmould.animation.json");
     }
 
     @Override

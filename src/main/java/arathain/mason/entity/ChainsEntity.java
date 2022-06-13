@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -18,7 +19,7 @@ public class ChainsEntity extends HostileEntity implements IAnimatable {
     private final AnimationFactory factory = new AnimationFactory(this);
     public ChainsEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        this.intersectionChecked = true;
+        this.inanimate = true;
     }
 
     @Override
@@ -61,7 +62,7 @@ public class ChainsEntity extends HostileEntity implements IAnimatable {
             return true;
         }
         this.scheduleVelocityUpdate();
-        this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
+        this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
         if ((!(source.getAttacker() == this.getFirstPassenger()) && amount >= 6) || source.isExplosive() || source.isFire() || source.isSourceCreativePlayer()) {
             this.discard();
         }

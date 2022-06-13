@@ -33,7 +33,7 @@ public class MerchantSimulacrumBlock extends Block implements Waterloggable {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED)) {
-            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
@@ -43,7 +43,7 @@ public class MerchantSimulacrumBlock extends Block implements Waterloggable {
         if (!state.get(Properties.WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
             if (!world.isClient()) {
                 world.setBlockState(pos, state.with(Properties.WATERLOGGED, true), 3);
-                world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+                world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
             }
             return true;
         }

@@ -82,7 +82,7 @@ public class RavenDeliverBundleGoal<T extends TameableEntity> extends Goal {
     }
 
     public void tick() {
-        this.tameable.getLookControl().lookAt(this.receiver, 10.0F, (float) this.tameable.getMaxLookPitchChange());
+        this.tameable.getLookControl().lookAt(this.receiver, 10.0F, (float) this.tameable.getLookPitchSpeed());
         if (--this.updateCountdownTicks <= 0) {
             this.updateCountdownTicks = 10;
 

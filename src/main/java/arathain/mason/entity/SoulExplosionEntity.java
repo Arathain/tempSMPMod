@@ -41,32 +41,32 @@ public class SoulExplosionEntity extends Entity {
                 }
             }
             for (int i = 1; i < (8); i++) {
-                this.getEntityWorld().addImportantParticle(ParticleTypes.LARGE_SMOKE,
+                this.getWorld().addImportantParticle(ParticleTypes.LARGE_SMOKE,
                         this.getX() + random.nextGaussian(),
                         this.getY(),
                         this.getZ() + random.nextGaussian(),
                         0, 0.1, 0);
-                this.getEntityWorld().addImportantParticle(ParticleTypes.LARGE_SMOKE,
+                this.getWorld().addImportantParticle(ParticleTypes.LARGE_SMOKE,
                         this.getX(),
                         this.getY(),
                         this.getZ(),
                         MathHelper.cos(i/4f * 3.141592f + (this.age + random.nextFloat()) / 10f) / 2f, 0.2, MathHelper.sin(i/4f * 3.141592f + (this.age + random.nextFloat()) / 10f) / 2f);
-                this.getEntityWorld().addImportantParticle(ParticleTypes.LARGE_SMOKE,
+                this.getWorld().addImportantParticle(ParticleTypes.LARGE_SMOKE,
                         this.getX(),
                         this.getY(),
                         this.getZ(),
                         MathHelper.cos(i/4f * 3.141592f + (this.age + random.nextFloat()) / 10f) / 2f, 0.2, MathHelper.sin(i/4f * 3.141592f + (this.age + random.nextFloat()) / 10f) / 2f);
-                this.getEntityWorld().addImportantParticle(ParticleTypes.SOUL_FIRE_FLAME,
+                this.getWorld().addImportantParticle(ParticleTypes.SOUL_FIRE_FLAME,
                         this.getX(),
                         this.getY(),
                         this.getZ(),
                         (random.nextFloat()-0.5f) / 4, 1f + random.nextFloat(), (random.nextFloat()-0.5f) / 4);
-                this.getEntityWorld().addImportantParticle(ParticleTypes.SOUL_FIRE_FLAME,
+                this.getWorld().addImportantParticle(ParticleTypes.SOUL_FIRE_FLAME,
                         this.getX(),
                         this.getY(),
                         this.getZ(),
                         (random.nextFloat()-0.5f) / 4, 1f + random.nextFloat(), (random.nextFloat()-0.5f) / 4);
-                this.getEntityWorld().addImportantParticle(ParticleTypes.SOUL,
+                this.getWorld().addImportantParticle(ParticleTypes.SOUL,
                         this.getX(),
                         this.getY(),
                         this.getZ(),

@@ -13,11 +13,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import org.quiltmc.qsl.resource.loader.api.reloader.ResourceReloaderKeys;
+import org.quiltmc.qsl.resource.loader.api.reloader.SimpleSynchronousResourceReloader;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public class GlaiveItemRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer, SimpleSynchronousResourceReloadListener {
+public class GlaiveItemRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer, SimpleSynchronousResourceReloader {
     private final Identifier id;
     private final Identifier scytheId;
     private ItemRenderer itemRenderer;
@@ -30,13 +32,13 @@ public class GlaiveItemRenderer implements BuiltinItemRendererRegistry.DynamicIt
     }
 
     @Override
-    public Identifier getFabricId() {
+    public Identifier getQuiltId() {
         return this.id;
     }
 
     @Override
-    public Collection<Identifier> getFabricDependencies() {
-        return Collections.singletonList(ResourceReloadListenerKeys.MODELS);
+    public Collection<Identifier> getQuiltDependencies() {
+        return Collections.singletonList(ResourceReloaderKeys.Client.MODELS);
     }
 
     @Override

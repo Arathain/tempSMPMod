@@ -4,9 +4,7 @@ import arathain.mason.client.*;
 import arathain.mason.init.MasonObjects;
 import arathain.mason.item.GlaiveItemRenderer;
 import arathain.mason.util.UpdatePressingUpDownPacket;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import com.mojang.blaze3d.platform.InputUtil;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -15,37 +13,43 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.KeyBind;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
+import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
+import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
+import org.quiltmc.qsl.resource.loader.api.reloader.ResourceReloaderKeys;
+
 
 public class MasonDecorClient implements ClientModInitializer {
-    private static KeyBinding DESCEND;
+    private static KeyBind DESCEND;
     @Override
-    public void onInitializeClient() {
+    public void onInitializeClient(ModContainer mod) {
         initParticles();
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), MasonObjects.MERCHANT_SIMULACRUM);
+        BlockRenderLayerMap.put(RenderLayer.getCutout(), MasonObjects.MERCHANT_SIMULACRUM);
         EntityRendererRegistry.register(MasonObjects.SOULMOULD, SoulmouldEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.SOUL_EXPLOSION, SoulExplosionRenderer::new);
         EntityRendererRegistry.register(MasonObjects.RIPPED_SOUL, RippedSoulEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.BONEFLY, BoneflyEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.RAVEN, RavenEntityRenderer::new);
-        EntityRendererRegistry.register(MasonObjects.STATUE, AnimatedStatueRenderer::new);
         EntityRendererRegistry.register(MasonObjects.CHAINS, ChainsEntityRenderer::new);
-        DESCEND = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        DESCEND = KeyBindingHelper.registerKeyBinding(new KeyBind(
                 "key.mason.descend", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
                 GLFW.GLFW_KEY_G, // The keycode of the key
                 "category.mason.keybind"
         ));
-        ClientTickEvents.END_WORLD_TICK.register(world -> {
+        ClientTickEvents.END.register(world -> {
             PlayerEntity player = MinecraftClient.getInstance().player;
             if (player != null) {
                 UpdatePressingUpDownPacket.send(MinecraftClient.getInstance().options.jumpKey.isPressed(), DESCEND.isPressed());
@@ -54,7 +58,7 @@ public class MasonDecorClient implements ClientModInitializer {
         });
         Identifier scytheId = Registry.ITEM.getId(MasonObjects.GLAIVE);
         GlaiveItemRenderer scytheItemRenderer = new GlaiveItemRenderer(scytheId);
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(scytheItemRenderer);
+        ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(scytheItemRenderer);
         BuiltinItemRendererRegistry.INSTANCE.register(MasonObjects.GLAIVE, scytheItemRenderer);
         ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
             out.accept(new ModelIdentifier(scytheId + "_gui", "inventory"));
@@ -73,6 +77,6 @@ public class MasonDecorClient implements ClientModInitializer {
     }
 
     private static DefaultParticleType add(String name) {
-        return Registry.register(Registry.PARTICLE_TYPE, new Identifier("tot", name), FabricParticleTypes.simple());
+        return Registry.register(Registry.PARTICLE_TYPE, new Identifier(MasonDecor.MODID, name), FabricParticleTypes.simple());
     }
 }

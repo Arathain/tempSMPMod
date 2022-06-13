@@ -153,7 +153,7 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
         boolean flying = this.isInAir();
         float speed = (float) this.getAttributeValue(flying ? EntityAttributes.GENERIC_FLYING_SPEED : EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (!this.hasPassengers() && !this.canBeControlledByRider()) {
-            this.airStrafingSpeed = 0.02f;
+            this.flyingSpeed = 0.02f;
             super.travel(travelVector);
             return;
         }
@@ -197,7 +197,7 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
             }
         }
         if (flying) {
-            this.applyMovementInput(travelVector, speed);
+            this.handleFrictionAndCalculateMovement(travelVector, speed);
             this.move(MovementType.SELF, getVelocity());
             this.setVelocity(getVelocity().multiply(0.91f));
             this.updateLimbs(this, false);
@@ -343,7 +343,7 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
         return 2.3;
     }
 
-    @Override
+
     public boolean canBeControlledByRider() {
         return this.getFirstPassenger() instanceof LivingEntity;
     }

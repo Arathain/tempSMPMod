@@ -5,12 +5,12 @@ import arathain.mason.MasonDecor;
 import arathain.mason.init.MasonComponents;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.quiltmc.qsl.networking.api.PacketSender;
 
 public class UpdatePressingUpDownPacket {
     public static final Identifier ID = new Identifier(MasonDecor.MODID, "toggle_pressing_up_down");

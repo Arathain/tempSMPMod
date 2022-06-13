@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "tot:item/glaive_small"
+    "layer0": "mason:item/glaive_small"
   }
 }

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class SoulRipDamageSource extends DamageSource {
     protected final Entity source;
     public static DamageSource playerRip(PlayerEntity attacker) {
-        return new SoulRipDamageSource("soul_rip", attacker).setBypassesArmor().setUsesMagic();
+        return new SoulRipDamageSource("soul_rip", attacker).setUsesMagic();
     }
 
     public SoulRipDamageSource(String name, PlayerEntity source) {

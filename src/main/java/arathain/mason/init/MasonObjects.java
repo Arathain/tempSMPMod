@@ -3,7 +3,6 @@ package arathain.mason.init;
 import arathain.mason.MasonDecor;
 import arathain.mason.entity.*;
 import arathain.mason.item.*;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
@@ -20,6 +19,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
+import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,19 +37,18 @@ public class MasonObjects {
     public static final SoundEvent ENTITY_SOULMOULD_DEATH = createSoundEvent("entity.soulmould.death");
 
     public static final Block TORCHLIGHT = createBlock("torchlight", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(1.5F, 6.0F).sounds(BlockSoundGroup.LANTERN).luminance((blockState) -> 15)), true);
-    public static final Block SOULLIGHT = createBlock("soullight", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(1.5F, 6.0F).sounds(BlockSoundGroup.LANTERN).luminance((blockState) -> 11)), true);
+    public static final Block SOULLIGHT = createBlock("soullight", new SoullightBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(1.5F, 6.0F).sounds(BlockSoundGroup.LANTERN).luminance((blockState) -> 11)), true);
     public static final Block MERCHANT_SIMULACRUM = createBlock("merchant_simulacrum", new MerchantSimulacrumBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(4F, 16.0F).dropsNothing().sounds(BlockSoundGroup.ANCIENT_DEBRIS).luminance((blockState) -> 1)), true);
 
-    public static final Item GLAIVE = createItem("glaive", new GlaiveItem(4, -3.1f, new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.COMBAT).maxCount(1)));
-    public static final Item SOULMOULD_ITEM = createItem("soulmould", new SoulmouldItem(new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.DECORATIONS).maxCount(16)));
-    public static final Item BONEFLY_SKULL = createItem("bonefly_skull", new BoneflySkullItem(new FabricItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.DECORATIONS).maxCount(16)));
-    public static final Item SOULTRAP_EFFIGY_ITEM = createItem("soultrap_effigy", new SoultrapEffigyItem(new FabricItemSettings().fireproof().rarity(Rarity.RARE).maxCount(1)));
+    public static final Item GLAIVE = createItem("glaive", new GlaiveItem(4, -3.1f, new QuiltItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.COMBAT).maxCount(1)));
+    public static final Item SOULMOULD_ITEM = createItem("soulmould", new SoulmouldItem(new QuiltItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.DECORATIONS).maxCount(16)));
+    public static final Item BONEFLY_SKULL = createItem("bonefly_skull", new BoneflySkullItem(new QuiltItemSettings().fireproof().rarity(Rarity.UNCOMMON).group(ItemGroup.DECORATIONS).maxCount(16)));
+    public static final Item SOULTRAP_EFFIGY_ITEM = createItem("soultrap_effigy", new SoultrapEffigyItem(new QuiltItemSettings().fireproof().rarity(Rarity.RARE).maxCount(1)));
 
     public static final EntityType<ChainsEntity> CHAINS = createEntity("chains", RavenEntity.createRavenAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MISC, ChainsEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.8F)).build());
-    public static final EntityType<RavenEntity> RAVEN = createEntity("raven", RavenEntity.createRavenAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RavenEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.4F)).build());
+    public static final EntityType<RavenEntity> RAVEN = createRaven("raven", RavenEntity.createRavenAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RavenEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.4F)).build());
     public static final EntityType<SoulmouldEntity> SOULMOULD = createEntity("soulmould", SoulmouldEntity.createSoulmouldAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SoulmouldEntity::new).dimensions(EntityDimensions.fixed(0.85F, 2.7F)).fireImmune().build());
     public static final EntityType<BoneflyEntity> BONEFLY = createEntity("bonefly", BoneflyEntity.createBoneflyAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BoneflyEntity::new).dimensions(EntityDimensions.changing(1.4F, 2.1F)).fireImmune().build());
-    public static final EntityType<AnimatedStatueEntity> STATUE = createEntity("statue", AnimatedStatueEntity.createStatueAttributes(), FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, AnimatedStatueEntity::new).dimensions(EntityDimensions.fixed(0.5F, 2.0F)).fireImmune().build());
     public static final EntityType<SoulExplosionEntity> SOUL_EXPLOSION = createEntity("soul_explosion", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SoulExplosionEntity::new).trackRangeBlocks(10).dimensions(EntityDimensions.fixed(0.9f, 1.8F)).build());
     public static final EntityType<RippedSoulEntity> RIPPED_SOUL = createEntity("ripped_soul", RippedSoulEntity.createVexAttributes(), FabricEntityTypeBuilder.<RippedSoulEntity>create(SpawnGroup.MONSTER, RippedSoulEntity::new).dimensions(EntityDimensions.changing(0.9F, 0.9F)).fireImmune().build());
 
@@ -61,6 +60,11 @@ public class MasonObjects {
     }
 
     private static <T extends LivingEntity> EntityType<T> createEntity(String name, DefaultAttributeContainer.Builder attributes, EntityType<T> type) {
+        FabricDefaultAttributeRegistry.register(type, attributes);
+        ENTITY_TYPES.put(type, new Identifier(MasonDecor.MODID, name));
+        return type;
+    }
+    private static <T extends LivingEntity> EntityType<T> createRaven(String name, DefaultAttributeContainer.Builder attributes, EntityType<T> type) {
         FabricDefaultAttributeRegistry.register(type, attributes);
         ENTITY_TYPES.put(type, new Identifier("tot", name));
         return type;
@@ -77,7 +81,7 @@ public class MasonObjects {
         return item;
     }
     private static SoundEvent createSoundEvent(String name) {
-        Identifier id = new Identifier("tot", name);
+        Identifier id = new Identifier(MasonDecor.MODID, name);
         SoundEvent soundEvent = new SoundEvent(id);
         SOUND_EVENTS.put(soundEvent, id);
         return soundEvent;

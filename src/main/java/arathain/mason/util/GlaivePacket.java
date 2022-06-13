@@ -3,9 +3,6 @@ package arathain.mason.util;
 import arathain.mason.MasonDecor;
 import arathain.mason.init.MasonObjects;
 import arathain.mason.item.SoulRipDamageSource;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -15,6 +12,9 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
+import org.quiltmc.qsl.networking.api.PacketSender;
+import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import javax.annotation.Nullable;
 
@@ -27,7 +27,7 @@ public class GlaivePacket {
         if(entity != null)
             buf.writeInt(entity.getId());
 
-        ClientSidePacketRegistryImpl.INSTANCE.sendToServer(ID, buf);
+        ClientPlayNetworking.send(ID, buf);
     }
 
     public static void handle(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler network, PacketByteBuf buf, PacketSender sender) {
@@ -43,8 +43,9 @@ public class GlaivePacket {
                 g *= h;
                 f += g;
                 Entity crosshairTarget = player.world.getEntityById(entityId);
-                if(crosshairTarget != null)
-                crosshairTarget.damage(SoulRipDamageSource.playerRip(player), f);
+                if(crosshairTarget != null) {
+                    crosshairTarget.damage(SoulRipDamageSource.playerRip(player), f);
+                }
             }
         });
     }

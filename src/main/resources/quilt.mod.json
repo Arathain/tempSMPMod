@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "arathain",
+    "id": "mason",
+    "version": "${version}",
+    "metadata": {
+      "name": "Mason's Decor",
+      "description": "Life is temporary",
+      "contributors": {
+        "Arathain": "real"
+      },
+      "license": {
+        "name": "All Rights Reserved",
+        "id": "ARR",
+        "url": "https://en.wikipedia.org/wiki/All_rights_reserved",
+        "description": "All Rights Reserved."
+      },
+      "icon": "assets/mason/icon.png"
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": "arathain.mason.MasonDecor",
+      "client_init":  "arathain.mason.MasonDecorClient",
+      "cardinal-components": "arathain.mason.init.MasonComponents"
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "versions": ">=0.17.0-"
+      },
+      {
+        "id": "quilted_fabric_api",
+        "versions": ">=2.0.0-"
+      },
+      {
+        "id": "java",
+        "versions": ">=17"
+      }
+    ]
+  },
+  "access_widener": "mason.accesswidener",
+  "mixin": "mason.mixins.json",
+  "cardinal-components": [
+    "mason:rider"
+  ]
+}
