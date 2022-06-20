@@ -1,36 +1,36 @@
 {
   "entity.raven.caw": {
     "sounds": [
-      "tot:raven/raven_1",
-      "tot:raven/raven_2",
-      "tot:raven/raven_3"
+      "mason:raven/raven_1",
+      "mason:raven/raven_2",
+      "mason:raven/raven_3"
     ],
     "subtitle": "tot.subtitles.entity.raven.caw"
   },
   "entity.soulmould.ambient": {
     "sounds": [
-      "tot:soulmould/soulmould_ambient_1",
-      "tot:soulmould/soulmould_ambient_2"
+      "mason:soulmould/soulmould_ambient_1",
+      "mason:soulmould/soulmould_ambient_2"
     ],
     "subtitle": "tot.subtitles.entity.soulmould.ambient"
   },
   "entity.soulmould.attack": {
     "sounds": [
-      "tot:soulmould/soulmould_attack_1",
-      "tot:soulmould/soulmould_attack_2",
-      "tot:soulmould/soulmould_attack_3"
+      "mason:soulmould/soulmould_attack_1",
+      "mason:soulmould/soulmould_attack_2",
+      "mason:soulmould/soulmould_attack_3"
     ],
     "subtitle": "tot.subtitles.entity.soulmould.attack"
   },
   "entity.soulmould.hurt": {
     "sounds": [
-      "tot:soulmould/soulmould_damage_1"
+      "mason:soulmould/soulmould_damage_1"
     ],
     "subtitle": "tot.subtitles.entity.soulmould.hurt"
   },
   "entity.soulmould.death": {
     "sounds": [
-      "tot:soulmould/soulmould_death_1"
+      "mason:soulmould/soulmould_death_1"
     ],
     "subtitle": "tot.subtitles.entity.soulmould.death"
   }
