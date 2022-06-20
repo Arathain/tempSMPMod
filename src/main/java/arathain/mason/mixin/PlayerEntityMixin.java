@@ -1,7 +1,6 @@
 package arathain.mason.mixin;
 
 import arathain.mason.entity.BoneflyEntity;
-import arathain.mason.entity.ChainsEntity;
 import arathain.mason.init.MasonObjects;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -48,22 +47,14 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
 
 
-
     @Inject(method = "shouldDismount", at = @At("HEAD"), cancellable = true)
     private void webbingScuffedry(CallbackInfoReturnable<Boolean> cir) {
-        if((this.getVehicle() instanceof BoneflyEntity && !this.getVehicle().getFirstPassenger().equals(this)) || this.getVehicle() instanceof ChainsEntity) {
+        if((this.getVehicle() instanceof BoneflyEntity && !this.getVehicle().getFirstPassenger().equals(this))) {
             cir.setReturnValue(false);
         }
     }
-    @Override
-    public boolean isSneaking() {
-        if(this.getVehicle() instanceof ChainsEntity) {
-            return false;
-        }
-        return super.isSneaking();
-    }
     @ModifyArgs(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
-    private void malum$onDamaged(Args args) {
+    private void mason$onDamaged(Args args) {
         DamageSource source = args.get(0);
         float value = args.get(1);
         if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && this.isSubmergedInWater && !isInvulnerableTo(source) && !this.isDead() && random.nextInt(6) == 1) {

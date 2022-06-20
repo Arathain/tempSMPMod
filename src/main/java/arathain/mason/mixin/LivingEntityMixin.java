@@ -21,7 +21,7 @@ public abstract class LivingEntityMixin extends Entity  {
     }
 
     @Inject(method = "onDeath", at = @At("HEAD"))
-    private void malum$onDeath(DamageSource source, CallbackInfo ci) {
+    private void mason$onDeath(DamageSource source, CallbackInfo ci) {
         if(!world.isClient && source instanceof SoulRipDamageSource ripSource) {
             RippedSoulEntity soul = new RippedSoulEntity(MasonObjects.RIPPED_SOUL, this.getWorld());
             assert ripSource.getAttacker() != null;

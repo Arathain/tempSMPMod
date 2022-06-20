@@ -36,13 +36,10 @@ public class MasonDecorClient implements ClientModInitializer {
     @Override
     public void onInitializeClient(ModContainer mod) {
         initParticles();
-        BlockRenderLayerMap.put(RenderLayer.getCutout(), MasonObjects.MERCHANT_SIMULACRUM);
         EntityRendererRegistry.register(MasonObjects.SOULMOULD, SoulmouldEntityRenderer::new);
-        EntityRendererRegistry.register(MasonObjects.SOUL_EXPLOSION, SoulExplosionRenderer::new);
         EntityRendererRegistry.register(MasonObjects.RIPPED_SOUL, RippedSoulEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.BONEFLY, BoneflyEntityRenderer::new);
         EntityRendererRegistry.register(MasonObjects.RAVEN, RavenEntityRenderer::new);
-        EntityRendererRegistry.register(MasonObjects.CHAINS, ChainsEntityRenderer::new);
         DESCEND = KeyBindingHelper.registerKeyBinding(new KeyBind(
                 "key.mason.descend", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
