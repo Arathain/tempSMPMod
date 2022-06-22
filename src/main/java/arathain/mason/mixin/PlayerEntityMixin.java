@@ -2,6 +2,7 @@ package arathain.mason.mixin;
 
 import arathain.mason.entity.BoneflyEntity;
 import arathain.mason.init.MasonObjects;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -49,10 +50,21 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "shouldDismount", at = @At("HEAD"), cancellable = true)
     private void webbingScuffedry(CallbackInfoReturnable<Boolean> cir) {
-        if((this.getVehicle() instanceof BoneflyEntity && !this.getVehicle().getFirstPassenger().equals(this))) {
-            cir.setReturnValue(false);
+        if(this.getVehicle() instanceof BoneflyEntity fly) {
+            if(!this.getVehicle().getFirstPassenger().equals(this)) {
+                cir.setReturnValue(false);
+            }
         }
     }
+
+    @Override
+    public void stopRiding() {
+        if(this.getVehicle() instanceof BoneflyEntity fly) {
+            fly.getPassengerList().forEach(Entity::dismountVehicle);
+        }
+        super.stopRiding();
+    }
+
     @ModifyArgs(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private void mason$onDamaged(Args args) {
         DamageSource source = args.get(0);
