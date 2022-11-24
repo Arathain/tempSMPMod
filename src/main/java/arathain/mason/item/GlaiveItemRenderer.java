@@ -13,6 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.quiltmc.qsl.resource.loader.api.reloader.ResourceReloaderKeys;
 import org.quiltmc.qsl.resource.loader.api.reloader.SimpleSynchronousResourceReloader;
 
@@ -32,14 +33,10 @@ public class GlaiveItemRenderer implements BuiltinItemRendererRegistry.DynamicIt
     }
 
     @Override
-    public Identifier getQuiltId() {
+    public @NotNull Identifier getQuiltId() {
         return this.id;
     }
 
-    @Override
-    public Collection<Identifier> getQuiltDependencies() {
-        return Collections.singletonList(ResourceReloaderKeys.Client.MODELS);
-    }
 
     @Override
     public void reload(ResourceManager manager) {

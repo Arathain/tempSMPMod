@@ -3,6 +3,7 @@ package arathain.mason.mixin;
 import arathain.mason.entity.BoneflyEntity;
 import arathain.mason.entity.ChainsEntity;
 import arathain.mason.init.MasonObjects;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -50,11 +51,22 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 
     @Inject(method = "shouldDismount", at = @At("HEAD"), cancellable = true)
-    private void webbingScuffedry(CallbackInfoReturnable<Boolean> cir) {
-        if((this.getVehicle() instanceof BoneflyEntity && !this.getVehicle().getFirstPassenger().equals(this)) || this.getVehicle() instanceof ChainsEntity) {
-            cir.setReturnValue(false);
+    private void boneflyScuffedry(CallbackInfoReturnable<Boolean> cir) {
+        if(this.getVehicle() instanceof BoneflyEntity) {
+            if(!this.getVehicle().getFirstPassenger().equals(this)) {
+                cir.setReturnValue(false);
+            }
         }
     }
+
+    @Override
+    public void stopRiding() {
+        if(this.getVehicle() instanceof BoneflyEntity fly) {
+            fly.getPassengerList().forEach(Entity::dismountVehicle);
+        }
+        super.stopRiding();
+    }
+
     @Override
     public boolean isSneaking() {
         if(this.getVehicle() instanceof ChainsEntity) {
@@ -88,7 +100,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Override
     public boolean hurtByWater() {
-        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (this.getWorld().getBiome(this.getBlockPos()).hasTag(BiomeTags.IS_RIVER) || isInFlowingFluid(FluidTags.WATER))) {
+        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (this.getWorld().getBiome(this.getBlockPos()).isIn(BiomeTags.IS_RIVER) || isInFlowingFluid(FluidTags.WATER))) {
             return true;
         }
         return super.hurtByWater();

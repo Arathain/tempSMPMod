@@ -59,6 +59,7 @@ public class MasonDecorClient implements ClientModInitializer {
         Identifier scytheId = Registry.ITEM.getId(MasonObjects.GLAIVE);
         GlaiveItemRenderer scytheItemRenderer = new GlaiveItemRenderer(scytheId);
         ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(scytheItemRenderer);
+        ResourceLoader.get(ResourceType.CLIENT_RESOURCES).addReloaderOrdering(ResourceReloaderKeys.Client.MODELS, scytheItemRenderer.getQuiltId());
         BuiltinItemRendererRegistry.INSTANCE.register(MasonObjects.GLAIVE, scytheItemRenderer);
         ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
             out.accept(new ModelIdentifier(scytheId + "_gui", "inventory"));

@@ -158,7 +158,10 @@ public class BoneflyEntity extends HostileEntity implements IAnimatable, Tameabl
             return;
         }
         LivingEntity passenger = (LivingEntity) this.getFirstPassenger();
-        if (passenger != null) {
+        if(!(passenger instanceof PlayerEntity)) {
+            passenger.dismountVehicle();
+        }
+        if (passenger instanceof PlayerEntity) {
             this.headYaw = (float) this.serverYaw;
             this.serverHeadYaw = this.headYaw;
             this.serverYaw = this.serverYaw - passenger.sidewaysSpeed * 2f;

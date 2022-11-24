@@ -253,7 +253,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         if(player.getStackInHand(hand).isEmpty() && player.getUuid().equals(this.getOwnerUuid())) {
             if(player.isSneaking()) {
                 if(!player.getAbilities().creativeMode)
-                player.setStackInHand(hand, MasonObjects.SOULMOULD_ITEM.getDefaultStack());
+                    player.setStackInHand(hand, MasonObjects.SOULMOULD_ITEM.getDefaultStack());
                 this.remove(RemovalReason.DISCARDED);
                 return ActionResult.SUCCESS;
             } else {
@@ -263,13 +263,13 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         return super.interactMob(player, hand);
     }
     private void cycleActionState(PlayerEntity player) {
-        if(getActionState() == 0) {
+        if(getActionState() == 1) {
             setActionState(2);
             player.sendMessage(Text.translatable("amogus", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withObfuscated(true).withFont(new Identifier("minecraft", "default"))), true);
-        } else if(getActionState() == 2) {
+        } else if(getActionState() == 0) {
             setActionState(1);
             player.sendMessage(Text.translatable("info.tot.mould_activate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), true);
-        } else if(getActionState() == 1) {
+        } else if(getActionState() == 2) {
             setActionState(0);
             player.sendMessage(Text.translatable("info.tot.mould_deactivate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY)), true);
         }
