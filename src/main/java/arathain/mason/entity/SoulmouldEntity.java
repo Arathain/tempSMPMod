@@ -138,7 +138,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
         }
         nbt.putInt("DormantDir", getDormantDir().getId());
         nbt.putInt("ActionState", getActionState());
-        nbt.putInt("AttackState", getActionState());
+        nbt.putInt("AttackState", getAttackState());
 
 
         nbt.putInt("activationTicks", activationTicks);
