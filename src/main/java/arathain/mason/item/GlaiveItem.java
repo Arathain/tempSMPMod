@@ -30,6 +30,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Random;
 
 public class GlaiveItem extends SwordItem {
     private final float attackDamage;
@@ -79,6 +80,12 @@ public class GlaiveItem extends SwordItem {
                 if (target != player && player.squaredDistanceTo(target) > 6.0 && player.squaredDistanceTo(target) < 36.0) {
                     if(!(target instanceof ArmorStandEntity)) {
                         target.takeKnockback(0.4D, MathHelper.sin(player.getYaw() * 0.0175F), -MathHelper.cos(player.getYaw() * 0.0175F));
+                    }
+                    if(world.isClient) {
+                        Random r = new Random();
+                        for(int i = 0; i < 8;  i++) {
+                            world.addImportantParticle(ParticleTypes.SOUL_FIRE_FLAME, target.getParticleX(0.5), target.getRandomBodyY(), target.getParticleZ(0.5), (r.nextFloat() - 0.5f) * 0.5f, r.nextFloat()* 0.5f, (r.nextFloat() - 0.5f) * 0.5f);
+                        }
                     }
                     target.damage(SoulRipDamageSource.playerRip(player), this.attackDamage);
                 }

@@ -155,9 +155,9 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
     @Override
     protected void mobTick() {
         super.mobTick();
-        ItemStack stack = this.getStackInHand(Hand.MAIN_HAND);
+        ItemStack stack = this.getEquippedStack(EquipmentSlot.MAINHAND);
         if(!stack.isEmpty() && stack.hasCustomName()) {
-            PlayerEntity entity = getServer().getPlayerManager().getPlayer(stack.getName().toString());
+            PlayerEntity entity = getServer().getPlayerManager().getPlayer(stack.getName().getString());
             if(entity != null && entity.getUuid() != null && !stack.getName().toString().contains("Mouthpiece")) {
                 this.setReceiverUuid(entity.getUuid());
             } else {
@@ -200,8 +200,21 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
         ItemStack stack = player.getStackInHand(hand);
         if(stack.getItem().equals(Items.BUNDLE) && stack.hasCustomName()) {
             if (!this.world.isClient) {
-                this.setStackInHand(Hand.MAIN_HAND, stack);
+                this.equipStack(EquipmentSlot.MAINHAND, stack.copy());
                 player.setStackInHand(hand, ItemStack.EMPTY);
+                ItemStack stack2 = this.getEquippedStack(EquipmentSlot.MAINHAND);
+                if (!stack2.isEmpty() && stack2.hasCustomName()) {
+                    PlayerEntity entity = getServer().getPlayerManager().getPlayer(stack2.getName().getString());
+                    if (entity != null && entity.getUuid() != null && !stack2.getName().toString().contains("Mouthpiece")) {
+                        this.setReceiverUuid(entity.getUuid());
+                    } else {
+                        this.setReceiverUuid(null);
+                        this.dataTracker.set(GOING_TO_RECEIVER, false);
+                    }
+                } else {
+                    this.setReceiverUuid(null);
+                    this.dataTracker.set(GOING_TO_RECEIVER, false);
+                }
             }
             return ActionResult.success(this.world.isClient);
         }

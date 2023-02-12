@@ -74,7 +74,7 @@ public class RippedSoulEntity extends HostileEntity {
         this.checkBlockCollision();
     }
     public static DefaultAttributeContainer.Builder createVexAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 2.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 2.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 7.0);
     }
     @Override
     protected void initGoals() {
@@ -86,7 +86,7 @@ public class RippedSoulEntity extends HostileEntity {
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
         this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge(new Class[0]));
         this.targetSelector.add(2, new TrackOwnerTargetGoal(this));
-        this.targetSelector.add(3, new TargetGoal<>(this, PlayerEntity.class, true, player -> !isOwner(player) && !(player.getUuid().equals(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2")) || player.getUuid().equals(UUID.fromString("9ff98de6-2261-411e-b554-e5318d286528")))));
+        this.targetSelector.add(3, new TargetGoal<>(this, PlayerEntity.class, true, player -> !isOwner(player) && !(player.getUuid().equals(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2")))));
     }
 
     @Override
@@ -248,7 +248,7 @@ public class RippedSoulEntity extends HostileEntity {
                 this.state = MoveControl.State.WAIT;
                 RippedSoulEntity.this.setVelocity(RippedSoulEntity.this.getVelocity().multiply(0.5));
             } else {
-                RippedSoulEntity.this.setVelocity(RippedSoulEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));
+                RippedSoulEntity.this.setVelocity(RippedSoulEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.08 / d)));
                 if (RippedSoulEntity.this.getTarget() == null) {
                     Vec3d vec3d2 = RippedSoulEntity.this.getVelocity();
                     RippedSoulEntity.this.setYaw(-((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f);
@@ -316,7 +316,7 @@ public class RippedSoulEntity extends HostileEntity {
                 double d = RippedSoulEntity.this.squaredDistanceTo(livingEntity);
                 if (d < 9.0) {
                     Vec3d vec3d = livingEntity.getEyePos();
-                    RippedSoulEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
+                    RippedSoulEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.3);
                 }
             }
         }

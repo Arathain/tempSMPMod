@@ -195,8 +195,10 @@
 				},
 				"eyes": {
 					"scale": {
-						"vector": [1, 1, 1],
-						"easing": "easeInExpo"
+						"0.5": {
+							"vector": [1, 1, 1],
+							"easing": "easeInExpo"
+						}
 					}
 				}
 			}

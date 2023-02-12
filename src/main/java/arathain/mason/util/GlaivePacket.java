@@ -7,16 +7,19 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.random.RandomGenerator;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import javax.annotation.Nullable;
+import java.util.Random;
 
 public class GlaivePacket {
     public static final Identifier ID = new Identifier(MasonDecor.MODID, "glaive");
@@ -24,8 +27,13 @@ public class GlaivePacket {
     public static void send(@Nullable Entity entity) {
         PacketByteBuf buf = PacketByteBufs.create();
 
-        if(entity != null)
+        if(entity != null) {
             buf.writeInt(entity.getId());
+            Random r = new Random();
+            for(int i = 0; i < 8;  i++) {
+                entity.world.addImportantParticle(ParticleTypes.SOUL_FIRE_FLAME, entity.getParticleX(0.5), entity.getRandomBodyY(), entity.getParticleZ(0.5), (r.nextFloat() - 0.5f) * 0.5f, r.nextFloat()* 0.5f, (r.nextFloat() - 0.5f) * 0.5f);
+            }
+        }
 
         ClientPlayNetworking.send(ID, buf);
     }

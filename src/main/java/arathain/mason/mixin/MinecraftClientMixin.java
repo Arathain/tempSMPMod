@@ -34,7 +34,7 @@ public abstract class MinecraftClientMixin {
     public void glaiveStab(CallbackInfo info) {
         if(player != null) {
             if(player.getStackInHand(player.getActiveHand()).isOf(MasonObjects.GLAIVE)) {
-                if(player.getAttackCooldownProgress(0.5F) == 1F && (!player.getItemCooldownManager().isCoolingDown(player.getMainHandStack().getItem())) && crosshairTarget != null) {
+                if(player.getAttackCooldownProgress(0.5F) == 1 && crosshairTarget != null) {
                     GlaivePacket.send(crosshairTarget.getType() == HitResult.Type.ENTITY ? ((EntityHitResult) crosshairTarget).getEntity() : null);
 
                     if(crosshairTarget.getType() == HitResult.Type.BLOCK)
