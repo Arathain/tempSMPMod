@@ -42,3 +42,25 @@ public class RavenEntityModel extends GeoModel<RavenEntity> {
         }
     }
 }
+
+
+    /*@Override
+    public void codeAnimations(RavenEntity entity, Integer uniqueID, AnimationEvent<?> customPredicate) {
+        super.codeAnimations(entity, uniqueID, customPredicate);
+        IBone root = this.getAnimationProcessor().getBone("root");
+        if(entity.isBaby()) {
+            if (root != null) {
+                root.setScaleX(0.5f);
+                root.setScaleY(0.5f);
+                root.setScaleZ(0.5f);
+                root.setPositionY(-0.1F);
+            }
+        } else {
+            if (root != null) {
+                root.setScaleX(1.2f);
+                root.setScaleY(1.2f);
+                root.setScaleZ(1.2f);
+                root.setPositionY(0.05F);
+            }
+        }
+    }*/

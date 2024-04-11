@@ -3,14 +3,11 @@ package arathain.mason.entity;
 import arathain.mason.init.MasonComponents;
 import arathain.mason.init.MasonObjects;
 import arathain.mason.mixin.EntityAccessor;
-import arathain.mason.util.RiderComponent;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -36,67 +33,71 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.*;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 public class BoneflyEntity extends HostileEntity implements GeoAnimatable, TameableHostileEntity {
     private final AnimatableInstanceCache factory = GeckoLibUtil.createInstanceCache(this);
-    protected static final TrackedData<Boolean> DORMANT;
-    public static final TrackedData<Integer> ACTION_STATE;
-    private static final TrackedData<Optional<UUID>> OWNER_UUID;
+    protected static final TrackedData<Boolean> DORMANT = DataTracker.registerData(BoneflyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Integer> ACTION_STATE = DataTracker.registerData(BoneflyEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(BoneflyEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     public int stabTicks = 0;
-
     public BoneflyEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        this.setStepHeight(1.5F);
+        this.setStepHeight(1.5f);
         this.setPersistent();
     }
 
+    @Override
     public boolean canHaveStatusEffect(StatusEffectInstance effect) {
         return false;
     }
 
     public static DefaultAttributeContainer.Builder createBoneflyAttributes() {
-        return MobEntity.createAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 60.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_FLYING_SPEED, 0.4).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0).add(EntityAttributes.GENERIC_ARMOR, 24.0);
+        return MobEntity.createAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 60).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_FLYING_SPEED, 0.4).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f);
     }
-
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(DORMANT, false);
         this.dataTracker.startTracking(ACTION_STATE, 0);
         this.dataTracker.startTracking(OWNER_UUID, Optional.of(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2")));
     }
-
+    @Override
     public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
+    @Override
+    protected void initGoals() {}
 
-    protected void initGoals() {
-    }
+    @Override
+    protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {}
 
-    protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
-    }
-
+    @Override
     public boolean isClimbing() {
         return false;
     }
-
+    @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         if (this.getOwnerUuid() != null) {
             nbt.putUuid("Owner", this.getOwnerUuid());
         }
-
-        nbt.putInt("ActionState", this.getActionState());
+        nbt.putInt("ActionState", getActionState());
         nbt.putBoolean("Dormant", this.isDormant());
-        nbt.putInt("stabTicks", this.stabTicks);
+        nbt.putInt("stabTicks", stabTicks);
     }
-
+    @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         UUID ownerUUID;
@@ -106,8 +107,8 @@ public class BoneflyEntity extends HostileEntity implements GeoAnimatable, Tamea
             String string = nbt.getString("Owner");
             ownerUUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
         }
-
         this.setActionState(nbt.getInt("ActionState"));
+
         if (ownerUUID != null) {
             try {
                 this.setOwnerUuid(ownerUUID);
@@ -116,225 +117,197 @@ public class BoneflyEntity extends HostileEntity implements GeoAnimatable, Tamea
                 this.setTamed(false);
             }
         }
-
         this.setDormant(nbt.getBoolean("Dormant"));
-        this.stabTicks = nbt.getInt("stabTicks");
+        stabTicks = nbt.getInt("stabTicks");
     }
-
     public boolean isDormant() {
-        return (Boolean)this.getDataTracker().get(DORMANT);
+        return getDataTracker().get(DORMANT);
     }
 
+    @Override
     protected void addFlapEffects() {
-        this.playSound(SoundEvents.ENTITY_ENDER_DRAGON_FLAP, 1.0F, 1.0F);
+        playSound(SoundEvents.ENTITY_ENDER_DRAGON_FLAP, 1f, 1);
     }
 
+    @Override
     protected boolean hasWings() {
         return this.isInAir();
     }
-
+    @Override
     public EntityGroup getGroup() {
         return EntityGroup.UNDEAD;
     }
-
     public int getActionState() {
-        return (Integer)this.dataTracker.get(ACTION_STATE);
+        return this.dataTracker.get(ACTION_STATE);
     }
-
     public void setActionState(int i) {
         this.dataTracker.set(ACTION_STATE, i);
     }
 
     public void setDormant(boolean rest) {
-        this.getDataTracker().set(DORMANT, rest);
+        getDataTracker().set(DORMANT, rest);
     }
-
+    @Override
     public void travel(Vec3d travelVector) {
         boolean flying = this.isInAir();
-        float speed = (float)this.getAttributeValue(flying ? EntityAttributes.GENERIC_FLYING_SPEED : EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        float speed = (float) this.getAttributeValue(flying ? EntityAttributes.GENERIC_FLYING_SPEED : EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (!this.hasPassengers() && !this.canBeControlledByRider()) {
             this.setMovementSpeed(0.02F);
             super.travel(travelVector);
-        } else {
-            LivingEntity passenger = (LivingEntity)this.getFirstPassenger();
-            if (!(passenger instanceof PlayerEntity)) {
-                passenger.dismountVehicle();
+            return;
+        }
+        LivingEntity passenger = (LivingEntity) this.getFirstPassenger();
+        if(!(passenger instanceof PlayerEntity)) {
+            passenger.dismountVehicle();
+        }
+        if (passenger instanceof PlayerEntity) {
+            this.headYaw = (float) this.serverYaw;
+            this.serverHeadYaw = this.headYaw;
+            this.serverYaw = this.serverYaw - passenger.sidewaysSpeed * 2f;
+            this.serverPitch = passenger.getPitch() * 0.5F;
+            boolean isPlayerUpwardsMoving = MasonComponents.RIDER_COMPONENT.get(passenger).isPressingUp();
+            boolean isPlayerDownwardsMoving = MasonComponents.RIDER_COMPONENT.get(passenger).isPressingDown();
+            double getFlightDelta = isPlayerUpwardsMoving && isPlayerDownwardsMoving ? 0 : isPlayerUpwardsMoving ? 0.8 : isPlayerDownwardsMoving ? -0.6 : 0;
+            this.setPitch((float) this.serverPitch);
+            this.setYaw((float) this.serverYaw);
+            this.setRotation(this.getYaw(), this.getPitch());
+            this.bodyYaw = (float) this.serverYaw;
+            if(!flying) {
+                setActionState(0);
             }
-
-            if (passenger instanceof PlayerEntity) {
-                this.headYaw = (float)this.serverYaw;
-                this.serverHeadYaw = (double)this.headYaw;
-                this.serverYaw -= (double)(passenger.sidewaysSpeed * 2.0F);
-                this.serverPitch = (double)(passenger.getPitch() * 0.5F);
-                boolean isPlayerUpwardsMoving = ((RiderComponent)MasonComponents.RIDER_COMPONENT.get(passenger)).isPressingUp();
-                boolean isPlayerDownwardsMoving = ((RiderComponent)MasonComponents.RIDER_COMPONENT.get(passenger)).isPressingDown();
-                double getFlightDelta = isPlayerUpwardsMoving && isPlayerDownwardsMoving ? 0.0 : (isPlayerUpwardsMoving ? 0.8 : (isPlayerDownwardsMoving ? -0.6 : 0.0));
-                this.setPitch((float)this.serverPitch);
-                this.setYaw((float)this.serverYaw);
-                this.setRotation(this.getYaw(), this.getPitch());
-                this.bodyYaw = (float)this.serverYaw;
-                if (!flying) {
+            if(this.hasPassengers() && isPlayerDownwardsMoving && isPlayerUpwardsMoving && this.isInAir()) {
+                if(this.getActionState() == 0 || this.getActionState() == 2) {
+                    this.setActionState(1);
+                } else {
                     this.setActionState(0);
-                }
-
-                if (this.hasPassengers() && isPlayerDownwardsMoving && isPlayerUpwardsMoving && this.isInAir()) {
-                    if (this.getActionState() != 0 && this.getActionState() != 2) {
-                        this.setActionState(0);
-                        if (this.getPassengerList().size() > 1) {
-                            ((Entity)this.getPassengerList().get(1)).dismountVehicle();
-                        }
-                    } else {
-                        this.setActionState(1);
+                    if(this.getPassengerList().size() > 1) {
+                        this.getPassengerList().get(1).dismountVehicle();
                     }
                 }
-
-                if (!flying && isPlayerUpwardsMoving) {
-                    this.jump();
-                }
-
-                if (this.getFirstPassenger() != null) {
-                    travelVector = new Vec3d(0.0, getFlightDelta, (double)(passenger.forwardSpeed * (flying ? 1.0F : 0.4F)));
-                    this.setMovementSpeed(speed);
-                    this.stepBobbingAmount = 0.0F;
-                } else if (passenger instanceof PlayerEntity) {
-                    this.updateLimbs(false);
-                    this.setVelocity(Vec3d.ZERO);
-                    return;
-                }
             }
 
-            if (flying) {
-                this.handleFrictionAndCalculateMovement(travelVector, speed);
-                this.move(MovementType.SELF, this.getVelocity());
-                this.setVelocity(this.getVelocity().multiply(0.9100000262260437));
+            if (!flying && isPlayerUpwardsMoving) this.jump();
+
+            if (this.getFirstPassenger() != null) {
+                travelVector = new Vec3d(0, getFlightDelta, passenger.forwardSpeed * (flying ? 1 : 0.4f));
+                this.setMovementSpeed(speed);
+                this.stepBobbingAmount = 0;
+            } else if (passenger instanceof PlayerEntity) {
                 this.updateLimbs(false);
-                this.updatePositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-            } else {
-                super.travel(travelVector);
-                this.updateLeash();
+                this.setVelocity(Vec3d.ZERO);
+                return;
             }
-
+        }
+        if (flying) {
+            this.handleFrictionAndCalculateMovement(travelVector, speed);
+            this.move(MovementType.SELF, getVelocity());
+            this.setVelocity(getVelocity().multiply(0.91f));
+            this.updateLimbs(false);
+            this.updatePositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+        }
+        else {
+            super.travel(travelVector);
+            this.updateLeash();
         }
     }
-
+    @Override
     public void tick() {
         super.tick();
-        if (this.age % 20 == 0 && this.getHealth() < this.getMaxHealth() && this.isDormant()) {
-            this.heal(2.0F);
+        if (age % 20 == 0 && getHealth() < getMaxHealth() && isDormant()) {
+            heal(2);
         }
-
-        if (this.isDormant()) {
-            this.setVelocity(0.0, this.getVelocity().y, 0.0);
-            this.setPitch(0.0F);
+        if(isDormant()) {
+            setVelocity(0, getVelocity().y, 0);
+            setPitch(0);
         }
-
-        if (this.getActionState() == 1) {
-            ++this.stabTicks;
-            if (this.stabTicks >= 10) {
+        if(this.getActionState() == 1) {
+            stabTicks++;
+            if(stabTicks >= 10) {
                 this.setActionState(2);
-                System.out.println(this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().offset(0.0, -2.0, 0.0).expand(1.0), (entity) -> {
-                    return entity != this;
-                }).size() > 0);
-                if (!this.getWorld().isClient() && this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().offset(0.0, -2.0, 0.0).expand(1.0), (entity) -> {
-                    return entity != this;
-                }).size() > 0 && this.getPassengerList().size() <= 1) {
-                    LivingEntity livingEntity = this.getWorld().getClosestEntity(this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().offset(0.0, -2.0, 0.0).expand(1.0), (entity) -> {
-                        return entity != this;
-                    }), TargetPredicate.createAttackable(), this, this.getX(), this.getY(), this.getZ());
-                    if (livingEntity != null) {
-                        if (!(livingEntity instanceof PlayerEntity player)) {
+                System.out.println(this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().offset(0,-2,0).expand(1), entity -> entity != this).size() > 0);
+                if(!this.getWorld().isClient() && this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().offset(0,-2,0).expand(1), entity -> entity != this).size() > 0 && this.getPassengerList().size() <= 1) {
+                    LivingEntity livingEntity = this.getWorld().getClosestEntity(this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().offset(0, -2, 0).expand(1), entity -> entity != this), TargetPredicate.createAttackable(), this, this.getX(), this.getY(), this.getZ());
+                    if(livingEntity != null) {
+                        if(!(livingEntity instanceof PlayerEntity)) {
                             this.tryAttack(livingEntity);
                             livingEntity.startRiding(this, true);
                         } else {
+                            PlayerEntity player = (PlayerEntity) livingEntity;
                             this.tryAttack(livingEntity);
-                            this.playerStartRiding(this, player);
+                            playerStartRiding(this, player);
                         }
                     }
                 }
-
-                this.stabTicks = 0;
+                stabTicks = 0;
             }
         }
-
     }
-
     private void playerStartRiding(Entity entity, PlayerEntity player) {
-        if (entity != player.getVehicle()) {
-            for(Entity entity2 = entity; entity2.getVehicle() != null; entity2 = entity2.getVehicle()) {
-                if (entity2.getVehicle() == this) {
-                    return;
-                }
-            }
-
-            if (this.hasVehicle()) {
-                player.stopRiding();
-            }
-
-            this.setPose(EntityPose.STANDING);
-            player.vehicle = entity;
-            this.boneflyAddPassenger(player, player.getVehicle());
-            ((EntityAccessor)entity).mason$streamIntoPassengers().filter((passenger) -> {
-                return passenger instanceof ServerPlayerEntity;
-            }).forEach((playr) -> {
-                Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)playr);
-            });
+        if (entity == player.getVehicle()) {
+            return;
         }
+        Entity entity2 = entity;
+        while (entity2.getVehicle() != null) {
+            if (entity2.getVehicle() == this) {
+                return;
+            }
+            entity2 = entity2.getVehicle();
+        }
+        if (this.hasVehicle()) {
+            player.stopRiding();
+        }
+        this.setPose(EntityPose.STANDING);
+        player.vehicle = entity;
+        boneflyAddPassenger(player, player.getVehicle());
+        ((EntityAccessor) entity).mason$streamIntoPassengers().filter(passenger -> passenger instanceof ServerPlayerEntity).forEach(playr -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)playr));
     }
-
     protected void boneflyAddPassenger(Entity passenger, Entity adder) {
         if (passenger.getVehicle() != this) {
             throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
         } else {
-            if (adder.getPassengerList().isEmpty()) {
+            if (adder.passengerList.isEmpty()) {
                 adder.passengerList = ImmutableList.of(passenger);
             } else {
-                List<Entity> list = Lists.newArrayList(adder.getPassengerList());
+                List<Entity> list = Lists.newArrayList(adder.passengerList);
                 list.add(passenger);
+
                 adder.passengerList = ImmutableList.copyOf(list);
             }
 
         }
     }
-
+    @Override
     public boolean damage(DamageSource source, float amount) {
-        if (!this.getWorld().isClient() && source.getAttacker() != null) {
-            Entity var4 = source.getAttacker();
-            if (var4 instanceof PlayerEntity) {
-                PlayerEntity player = (PlayerEntity)var4;
-                if (player.isHolding(MasonObjects.SOULTRAP_EFFIGY_ITEM)) {
-                    this.setOwner(player);
-                }
+        if(!getWorld().isClient()) {
+            if (source.getAttacker() != null && source.getAttacker() instanceof PlayerEntity player && player.isHolding(MasonObjects.SOULTRAP_EFFIGY_ITEM)) {
+                this.setOwner(player);
             }
         }
-
         return super.damage(source, amount);
     }
-
     public boolean isInAir() {
-        return this.isHighEnough((int) this.getStepHeight() + 1);
+        return this.isHighEnough((int) getStepHeight() + 1);
     }
 
     public boolean isHighEnough(int altitude) {
-        return this.getAltitude(altitude) >= (double)altitude;
+        return this.getAltitude(altitude) >= altitude;
     }
 
     public double getAltitude(int limit) {
         BlockPos.Mutable mutable = this.getBlockPos().mutableCopy();
 
-        for(int i = 0; i <= limit && mutable.getY() > 0 && !this.getWorld().getBlockState(mutable.move(Direction.DOWN)).blocksMovement(); ++i) {
-        }
-
-        return this.getY() - (double)mutable.getY() - 0.11;
+        // limit so we don't do dozens of iterations per tick
+        for (int i = 0; i <= limit && mutable.getY() > 0 && !this.getWorld().getBlockState(mutable.move(Direction.DOWN)).blocksMovement(); i++);
+        return this.getY() - mutable.getY() - 0.11;
     }
-
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        if ((stack.getItem().equals(Items.BONE_BLOCK) || stack.isIn(ItemTags.SOUL_FIRE_BASE_BLOCKS)) && this.getHealth() < this.getMaxHealth()) {
-            if (!player.isCreative()) stack.decrement(1);
-            this.heal(1.0F);
-            return ActionResult.SUCCESS;
-        } else if (this.isOwner(player) && !this.isBaby() && stack.isEmpty() && this.isTamed() && !this.hasPassengers()) {
-            if (player.isSneaking()) {
+        if((stack.getItem().equals(Items.BONE_BLOCK) || stack.isIn(ItemTags.SOUL_FIRE_BASE_BLOCKS)) && this.getHealth() < this.getMaxHealth()) {
+           stack.decrement(1);
+           this.heal(1);
+        }
+        if (this.isOwner(player) && !isBaby() && stack.isEmpty() && this.isTamed() && !this.hasPassengers()) {
+            if(player.isSneaking()) {
                 this.setDormant(!this.isDormant());
             } else {
                 player.startRiding(this);
@@ -349,33 +322,34 @@ public class BoneflyEntity extends HostileEntity implements GeoAnimatable, Tamea
         super.removePassenger(passenger);
     }
 
-
-    public void updatePassengerPosition(Entity passenger, PositionUpdater positionUpdater) {
-        if (this.hasPassenger(passenger)) {
-            if (this.getFirstPassenger() == passenger) {
-                float f = 0.5F;
-                float g = (float)((this.isRemoved() ? 0.009999999776482582 : this.getMountedHeightOffset()) + passenger.getHeightOffset());
-                Vec3d vec3d = (new Vec3d((double)f, 0.0, 0.0)).rotateY(-this.getYaw() * 0.017453292F - 1.5707964F);
-                passenger.setYaw(passenger.getYaw());
-                passenger.setHeadYaw(passenger.getHeadYaw());
-                positionUpdater.accept(passenger, this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
-            } else {
-                passenger.setYaw(this.getYaw());
-                passenger.setHeadYaw(this.getHeadYaw());
-                positionUpdater.accept(passenger, this.getX(), this.getY() - 0.5, this.getZ());
-            }
-
+    @Override
+    protected void updatePassengerPosition(Entity passenger, PositionUpdater positionUpdater) {
+        if (!this.hasPassenger(passenger)) {
+            return;
+        }
+        if(getFirstPassenger() == passenger) {
+            float f = 0.5f;
+            float g = (float) ((this.isRemoved() ? (double) 0.01f : this.getMountedHeightOffset()) + passenger.getHeightOffset());
+            Vec3d vec3d = new Vec3d(f, 0.0, 0.0).rotateY(-this.getYaw() * ((float) Math.PI / 180) - 1.5707964f);
+            passenger.setPosition(this.getX() + vec3d.x, this.getY() + (double) g, this.getZ() + vec3d.z);
+            passenger.setYaw(passenger.getYaw());
+            passenger.setHeadYaw(passenger.getHeadYaw());
+        } else {
+            passenger.setPosition(this.getX(), this.getY() - 0.5f, this.getZ());
+            passenger.setYaw(this.getYaw());
+            passenger.setHeadYaw(this.getHeadYaw());
         }
     }
 
+    @Override
     public double getMountedHeightOffset() {
         return 2.3;
     }
 
+
     public boolean canBeControlledByRider() {
         return this.getFirstPassenger() instanceof LivingEntity;
     }
-
     private <E extends GeoAnimatable> PlayState wingPredicate(AnimationState<E> event) {
         RawAnimation animationBuilder = RawAnimation.begin();
         if (this.isInAir()) {
@@ -392,59 +366,53 @@ public class BoneflyEntity extends HostileEntity implements GeoAnimatable, Tamea
 
         return PlayState.CONTINUE;
     }
-
     private <E extends GeoAnimatable> PlayState stabPredicate(AnimationState<E> event) {
         RawAnimation animationBuilder = RawAnimation.begin();
         if (this.getActionState() == 2) {
             animationBuilder.thenLoop("stabIdle");
-        } else {
-            if (this.getActionState() != 1) {
-                return PlayState.STOP;
-            }
-
+        } else if(this.getActionState() == 1) {
             animationBuilder.thenPlay("stab");
+        } else {
+            return PlayState.STOP;
         }
 
-        if (!animationBuilder.getAnimationStages().isEmpty()) {
+        if(!animationBuilder.getAnimationStages().isEmpty()) {
             event.getController().setAnimation(animationBuilder);
         }
-
         return PlayState.CONTINUE;
     }
-
     private <E extends GeoAnimatable> PlayState idlePredicate(AnimationState<E> event) {
         RawAnimation animationBuilder = RawAnimation.begin();
-        if (this.isDormant()) {
+        if(this.isDormant()) {
             animationBuilder.thenLoop("idleDormant");
+        } else if(this.hurtTime > 0 || this.deathTime > 0) {
+            animationBuilder.thenPlay("hurt");
         } else {
-            if (this.hurtTime <= 0 && this.deathTime <= 0) {
-                return PlayState.STOP;
-            }
-
-            animationBuilder.thenLoop("hurt");
+            return PlayState.STOP;
         }
-
-        if (!animationBuilder.getAnimationStages().isEmpty()) {
+        if(!animationBuilder.getAnimationStages().isEmpty()) {
             event.getController().setAnimation(animationBuilder);
         }
-
         return PlayState.CONTINUE;
     }
 
+    @Override
     public UUID getOwnerUuid() {
-        return (UUID)((Optional)this.dataTracker.get(OWNER_UUID)).orElse((Object)null);
+        return (UUID) ((Optional) this.dataTracker.get(OWNER_UUID)).orElse(null);
     }
 
+    @Override
     public void setOwnerUuid(@Nullable UUID uuid) {
         this.dataTracker.set(OWNER_UUID, Optional.ofNullable(uuid));
     }
 
+    @Override
     public void setOwner(PlayerEntity player) {
         this.setTamed(true);
         this.setOwnerUuid(player.getUuid());
     }
-
     @Nullable
+    @Override
     public LivingEntity getOwner() {
         try {
             UUID uUID = this.getOwnerUuid();
@@ -454,21 +422,19 @@ public class BoneflyEntity extends HostileEntity implements GeoAnimatable, Tamea
         }
     }
 
+    @Override
     public boolean isOwner(LivingEntity entity) {
         return entity == this.getOwner();
     }
 
+    @Override
     public boolean isTamed() {
         return true;
     }
 
+    @Override
     public void setTamed(boolean tamed) {
-    }
 
-    static {
-        DORMANT = DataTracker.registerData(BoneflyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-        ACTION_STATE = DataTracker.registerData(BoneflyEntity.class, TrackedDataHandlerRegistry.INTEGER);
-        OWNER_UUID = DataTracker.registerData(BoneflyEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     }
 
     @Override

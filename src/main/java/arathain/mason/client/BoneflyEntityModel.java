@@ -19,30 +19,6 @@ public class BoneflyEntityModel extends DefaultedEntityGeoModel<BoneflyEntity> {
         super.withAltTexture(new Identifier("mason", "bonefly/bonefly"));
     }
 
-    /*@Override
-    public void setCustomAnimations(BoneflyEntity animatable, long instanceId, AnimationState<BoneflyEntity> animationState) {
-        super.setCustomAnimations(animatable, instanceId, animationState);
-
-        EntityModelData extraData = (EntityModelData)animationState.getExtraData().get(0);
-        CoreGeoBone head = this.getAnimationProcessor().getBone("head");
-        CoreGeoBone neck = this.getAnimationProcessor().getBone("neck");
-        CoreGeoBone neckJoint = this.getAnimationProcessor().getBone("neckJoint");
-        if (head != null) {
-            head.setRotX(head.getRotX() + extraData.headPitch() * 3.1415927F / 540.0F);
-            head.setRotY(head.getRotY() + extraData.netHeadYaw() * 0.0058177644F);
-        }
-
-        if (neck != null) {
-            neck.setRotX(neck.getRotX() + extraData.headPitch() * 3.1415927F / 1080.0F);
-            neck.setRotY(neck.getRotY() + extraData.netHeadYaw() * 0.0058177644F);
-        }
-
-        if (neckJoint != null) {
-            neckJoint.setRotX(neckJoint.getRotX() + extraData.headPitch() * 3.1415927F / 1080.0F);
-            neckJoint.setRotY(neckJoint.getRotY() + extraData.netHeadYaw() * 0.0058177644F);
-        }
-    }*/
-
     @Override
     public void setCustomAnimations(BoneflyEntity animatable, long instanceId, AnimationState<BoneflyEntity> animationState) {
         CoreGeoBone head = getAnimationProcessor().getBone("head");

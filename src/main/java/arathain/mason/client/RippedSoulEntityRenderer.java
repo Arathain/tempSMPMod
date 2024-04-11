@@ -20,10 +20,8 @@ public class RippedSoulEntityRenderer extends EntityRenderer<RippedSoulEntity> {
         /*if (FabricLoader.getInstance().isModLoaded("illuminations")) {
             entity.getWorld().addParticle(new WispTrailParticleEffect(1.0F, 1.0F, 1.0F, -0.1F, -0.01F, 0.0F), entity.method_23317() + entity.method_6051().nextGaussian() / 15.0, entity.method_23318() + entity.method_6051().nextGaussian() / 15.0, entity.method_23321() + entity.method_6051().nextGaussian() / 15.0, 0.0, 0.0, 0.0);
         } else {*/
-            entity.getWorld().addParticle(overhead, entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
+        entity.getWorld().addParticle(overhead, entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
         //}
-
-        // TODO: USE EFFECTIVE PORT
 
     }
 
