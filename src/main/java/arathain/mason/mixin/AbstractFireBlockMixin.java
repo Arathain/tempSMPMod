@@ -12,12 +12,22 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AbstractFireBlock.class)
+@Mixin({AbstractFireBlock.class})
 public class AbstractFireBlockMixin {
-    @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
+    public AbstractFireBlockMixin() {
+    }
+
+    @Inject(
+            method = {"onEntityCollision"},
+            at = {@At("HEAD")},
+            cancellable = true
+    )
     private void cancelEffigy(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
-        if(entity instanceof PlayerEntity player && player.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack())) {
-            ci.cancel();
+        if (entity instanceof PlayerEntity player) {
+            if (player.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack())) {
+                ci.cancel();
+            }
         }
+
     }
 }

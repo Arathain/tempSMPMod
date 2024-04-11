@@ -1,27 +1,30 @@
 package arathain.mason.entity;
 
+import java.util.UUID;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-
-import javax.annotation.Nullable;
-import java.util.UUID;
+import org.jetbrains.annotations.Nullable;
 
 public interface TameableHostileEntity {
     UUID getOwnerUuid();
-    void setOwnerUuid(@Nullable UUID uuid);
-    void setOwner(PlayerEntity player);
+
+    void setOwnerUuid(@Nullable UUID var1);
+
+    void setOwner(PlayerEntity var1);
+
     LivingEntity getOwner();
-    boolean isOwner(LivingEntity entity);
+
+    boolean isOwner(LivingEntity var1);
 
     boolean isTamed();
-    void setTamed(boolean tamed);
 
-    default void onTamedChanged(){
+    void setTamed(boolean var1);
 
+    default void onTamedChanged() {
     }
 
     default boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
@@ -40,7 +43,7 @@ public interface TameableHostileEntity {
             return false;
         }
     }
-    default void reset() {
 
+    default void reset() {
     }
 }

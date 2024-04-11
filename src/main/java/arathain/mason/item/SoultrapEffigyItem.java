@@ -7,16 +7,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public class SoultrapEffigyItem extends Item {
-    public SoultrapEffigyItem(Settings settings) {
+    public SoultrapEffigyItem(Item.Settings settings) {
         super(settings);
     }
 
-    @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        if(entity instanceof PlayerEntity player) {
+        if (entity instanceof PlayerEntity player) {
             player.getHungerManager().setFoodLevel(20);
-            player.getHungerManager().setSaturationLevel(0);
+            player.getHungerManager().setSaturationLevel(0.0F);
         }
+
     }
 }

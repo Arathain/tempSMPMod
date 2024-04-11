@@ -1,11 +1,6 @@
 package arathain.mason.client;
 
 import arathain.mason.entity.RippedSoulEntity;
-import ladysnake.illuminations.client.Illuminations;
-import ladysnake.illuminations.client.particle.WillOWispParticle;
-import ladysnake.illuminations.client.particle.WispTrailParticle;
-import ladysnake.illuminations.client.particle.WispTrailParticleEffect;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
@@ -19,28 +14,21 @@ public class RippedSoulEntityRenderer extends EntityRenderer<RippedSoulEntity> {
         super(ctx);
     }
 
-    @Override
     public void render(RippedSoulEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
         DefaultParticleType overhead = ParticleTypes.SOUL_FIRE_FLAME;
-        if(FabricLoader.getInstance().isModLoaded("illuminations")) {
-            entity.getWorld()
-                    .addParticle(
-                            new WispTrailParticleEffect(1.0F, 1.0F, 1.0F, -0.1F, -0.01F, 0.0F),
-                            entity.getX() + entity.getRandom().nextGaussian() / 15.0,
-                            entity.getY() + entity.getRandom().nextGaussian() / 15.0,
-                            entity.getZ() + entity.getRandom().nextGaussian() / 15.0,
-                            0.0,
-                            0.0,
-                            0.0
-                    );
-        } else {
-            entity.getWorld().addParticle(overhead, entity.getX(), entity.getY(), entity.getZ(), 0, 0, 0);
-        }
+        /*if (FabricLoader.getInstance().isModLoaded("illuminations")) {
+            entity.getWorld().addParticle(new WispTrailParticleEffect(1.0F, 1.0F, 1.0F, -0.1F, -0.01F, 0.0F), entity.method_23317() + entity.method_6051().nextGaussian() / 15.0, entity.method_23318() + entity.method_6051().nextGaussian() / 15.0, entity.method_23321() + entity.method_6051().nextGaussian() / 15.0, 0.0, 0.0, 0.0);
+        } else {*/
+            entity.getWorld().addParticle(overhead, entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
+        //}
+
+        // TODO: USE EFFECTIVE PORT
+
     }
 
-    @Override
     public Identifier getTexture(RippedSoulEntity entity) {
         return null;
     }
 }
+

@@ -1,12 +1,12 @@
 package arathain.mason.entity.goal;
 
 import arathain.mason.entity.TameableHostileEntity;
+import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.ai.goal.Goal.Control;
 import net.minecraft.entity.mob.MobEntity;
-
-import java.util.EnumSet;
 
 public class TamedAttackWithOwnerGoal<T extends TameableHostileEntity> extends TrackTargetGoal {
     private final T tamed;
@@ -14,7 +14,7 @@ public class TamedAttackWithOwnerGoal<T extends TameableHostileEntity> extends T
     private int lastAttackTime;
 
     public TamedAttackWithOwnerGoal(T tamed) {
-        super((MobEntity) tamed, false);
+        super((MobEntity)tamed, false);
         this.tamed = tamed;
         this.setControls(EnumSet.of(Control.TARGET));
     }
