@@ -45,6 +45,10 @@ repositories {
 			includeGroupByRegex "com\\.github\\..*"
 		}
 	}
+	maven {
+		url "https://maven.cph101.com/releases"
+		// Impaled snapshot, not hosted on ladysnake maven or jitpack yet
+	}
 }
 
 dependencies {
@@ -68,6 +72,8 @@ dependencies {
 	modImplementation include("com.github.cph101:reach-entity-attributes:1.20.1-SNAPSHOT")
 
 	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.3.5")))
+
+	modCompileOnlyApi("org.ladysnake:Impaled:2.0.0") { transitive false } // 1.20.1 snapshot
 }
 configurations.all {
 	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
