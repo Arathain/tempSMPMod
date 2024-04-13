@@ -1,7 +1,6 @@
 package arathain.mason.entity;
 
 import arathain.mason.init.MasonObjects;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -13,7 +12,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.explosion.Explosion;
+import org.ladysnake.effective.Effective;
+import org.quiltmc.loader.api.QuiltLoader;
 
 import java.util.UUID;
 
@@ -32,11 +32,11 @@ public class SoulExplosionEntity extends Entity {
     public void tick() {
         super.tick();
         if (getWorld().isClient()) {
-            /*if(this.age < 200 && FabricLoader.getInstance().isModLoaded("illuminations")) {
+            if(this.age < 200 && QuiltLoader.isModLoaded("effective")) {
                 if (this.age % 4 == 0) {
-                    this.getWorld().addParticle(Illuminations.WILL_O_WISP, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
+                    this.getWorld().addParticle(Effective.WILL_O_WISP, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
                 }
-            }*/
+            }
             for (int i = 1; i < (8); i++) {
                 this.getWorld().addImportantParticle(ParticleTypes.LARGE_SMOKE,
                         this.getX() + random.nextGaussian(),

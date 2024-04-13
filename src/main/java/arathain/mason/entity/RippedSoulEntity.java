@@ -15,7 +15,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -26,8 +25,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,7 +82,7 @@ public class RippedSoulEntity extends HostileEntity {
         this.goalSelector.add(8, new LookAtTargetGoal());
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
-        this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge(new Class[0]));
+        this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
         this.targetSelector.add(2, new TrackOwnerTargetGoal(this));
         this.targetSelector.add(3, new TargetGoal<>(this, PlayerEntity.class, true, player -> !isOwner(player) && !(player.getUuid().equals(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2")))));
     }
@@ -192,7 +189,7 @@ public class RippedSoulEntity extends HostileEntity {
     }
 
     public void setOwner(PlayerEntity player) {
-        this.setOwnerUuid(player.getUuid());
+        if (player != null) this.setOwnerUuid(player.getUuid());
     }
 
     public LivingEntity getOwner() {
@@ -228,8 +225,9 @@ public class RippedSoulEntity extends HostileEntity {
         return SoundEvents.ENTITY_VEX_HURT;
     }
 
-    public float method_5718() {
-        return 1.0F;
+    @Override
+    public float getLightLevelDependentValue() {
+        return 1F;
     }
 
     class VexMoveControl

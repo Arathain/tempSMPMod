@@ -66,8 +66,8 @@ dependencies {
 	include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components_version}"
 	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components_version}"
 	include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components_version}"
-	//modImplementation "curse.maven:illuminations-292908:3823047"
-	//modRuntimeOnly "carpet:fabric-carpet:${project.minecraft_version}-${project.carpet_core_version}"
+	modImplementation "org.ladysnake:effective:2.2.1+1.20.1"
+	modRuntimeOnly "com.github.gnembon:fabric-carpet:${project.carpet_core_version}"
 
 	modImplementation include("com.github.cph101:reach-entity-attributes:1.20.1-SNAPSHOT")
 
