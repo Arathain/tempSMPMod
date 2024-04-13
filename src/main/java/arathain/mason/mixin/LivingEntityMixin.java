@@ -1,7 +1,6 @@
 package arathain.mason.mixin;
 
 import arathain.mason.entity.RippedSoulEntity;
-import arathain.mason.init.MasonDamageSources;
 import arathain.mason.init.MasonObjects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -25,7 +24,7 @@ public abstract class LivingEntityMixin extends Entity {
             at = {@At("HEAD")}
     )
     private void mason$onDeath(DamageSource source, CallbackInfo ci) {
-        if (!this.getWorld().isClient && source.isType(MasonDamageSources.SOUL_RIP)) {
+        if (!this.getWorld().isClient && source.isType(MasonObjects.SOUL_RIP_DMG_TYPE)) {
             RippedSoulEntity soul = new RippedSoulEntity(MasonObjects.RIPPED_SOUL, this.getWorld());
 
             assert source.getAttacker() != null;

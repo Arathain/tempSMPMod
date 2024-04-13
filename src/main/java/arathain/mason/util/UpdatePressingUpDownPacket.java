@@ -1,6 +1,5 @@
 package arathain.mason.util;
 
-
 import arathain.mason.MasonDecor;
 import arathain.mason.init.MasonComponents;
 import io.netty.buffer.Unpooled;

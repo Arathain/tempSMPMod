@@ -267,7 +267,6 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     private void cycleActionState(PlayerEntity player) {
         if(getActionState() == 1) {
             setActionState(2);
-            // He protec, he attak, but most important, he amongus - (you've been haunting him)
             player.sendMessage(Text.translatable("amogus", getWorld().getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withObfuscated(true).withFont(new Identifier("minecraft", "default"))), true);
         } else if(getActionState() == 0) {
             setActionState(1);

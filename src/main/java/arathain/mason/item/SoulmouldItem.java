@@ -18,7 +18,6 @@ public class SoulmouldItem extends Item {
     public ActionResult useOnBlock(ItemUsageContext ctx) {
         PlayerEntity player = ctx.getPlayer();
         BlockPos pos = ctx.getBlockPos();
-        Direction dir = ctx.getPlayerFacing();
         if (ctx.getWorld().getBlockState(pos.offset(ctx.getSide())).isAir() && ctx.getWorld().getBlockState(pos.offset(ctx.getSide()).offset(Direction.UP)).isAir() && ctx.getWorld().getBlockState(pos.offset(ctx.getSide()).offset(Direction.UP, 2)).isAir() || ctx.getWorld().getBlockState(pos.offset(ctx.getSide())).getBlock().equals(Blocks.WATER) && ctx.getWorld().getBlockState(pos.offset(ctx.getSide()).offset(Direction.UP)).getBlock().equals(Blocks.WATER) && ctx.getWorld().getBlockState(pos.offset(ctx.getSide()).offset(Direction.UP, 2)).getBlock().equals(Blocks.WATER)) {
             SoulmouldEntity mould = new SoulmouldEntity(MasonObjects.SOULMOULD, ctx.getWorld());
             mould.refreshPositionAndAngles(pos.offset(ctx.getSide()), 0.0F, 0.0F);

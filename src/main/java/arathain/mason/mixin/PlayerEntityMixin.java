@@ -73,7 +73,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         return super.isSneaking();
     }
     @ModifyArgs(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
-    private void malum$onDamaged(Args args) {
+    private void mason$onDamaged(Args args) {
         DamageSource source = args.get(0);
         float value = args.get(1);
         if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && this.isSubmergedInWater && !isInvulnerableTo(source) && !this.isDead() && random.nextInt(6) == 1) {

@@ -1,10 +1,6 @@
 package arathain.mason.item;
 
-import java.util.Collection;
-import java.util.Collections;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
-import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -15,8 +11,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import org.quiltmc.qsl.resource.loader.api.reloader.SimpleSynchronousResourceReloader;
 
-public class GlaiveItemRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer, SimpleSynchronousResourceReloadListener {
+public class GlaiveItemRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer, SimpleSynchronousResourceReloader {
     private final Identifier id;
     private final Identifier scytheId;
     private ItemRenderer itemRenderer;
@@ -28,12 +25,8 @@ public class GlaiveItemRenderer implements BuiltinItemRendererRegistry.DynamicIt
         this.scytheId = tridentId;
     }
 
-    public Identifier getFabricId() {
+    public Identifier getQuiltId() {
         return this.id;
-    }
-
-    public Collection<Identifier> getFabricDependencies() {
-        return Collections.singletonList(ResourceReloadListenerKeys.MODELS);
     }
 
     public void reload(ResourceManager manager) {
