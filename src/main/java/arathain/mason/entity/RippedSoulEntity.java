@@ -189,7 +189,7 @@ public class RippedSoulEntity extends HostileEntity {
     }
 
     public void setOwner(PlayerEntity player) {
-        if (player != null) this.setOwnerUuid(player.getUuid());
+        this.setOwnerUuid(player.getUuid());
     }
 
     public LivingEntity getOwner() {
