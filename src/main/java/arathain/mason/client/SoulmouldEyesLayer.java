@@ -1,5 +1,6 @@
 package arathain.mason.client;
 
+import arathain.mason.MasonDecor;
 import arathain.mason.entity.SoulmouldEntity;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.render.OverlayTexture;
@@ -19,9 +20,9 @@ public class SoulmouldEyesLayer extends GeoRenderLayer<SoulmouldEntity> {
 
 
     @Override
-    public void render(MatrixStack poseStack, SoulmouldEntity animatable, BakedGeoModel bakedModel, RenderLayer renderType, VertexConsumerProvider bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
-        Identifier location = new Identifier("mason", "textures/entity/mould/eyes.png");
+    public void render(MatrixStack matrixStackIn, SoulmouldEntity entitylivingbaseIn, BakedGeoModel bakedModel, RenderLayer renderType, VertexConsumerProvider bufferIn, VertexConsumer buffer, float partialTicks, int packedLightIn, int packedOverlay) {
+        Identifier location = new Identifier(MasonDecor.MODID, "textures/entity/mould/eyes.png");
         RenderLayer armor = RenderLayer.getEyes(location);
-        this.getRenderer().applyRenderLayersForBone(poseStack, animatable, this.getGeoModel().getBone("head").get(), renderType, bufferSource, buffer, partialTick, packedLight, packedOverlay);
+        this.getRenderer().reRender(this.getGeoModel().getBakedModel(this.getGeoModel().getModelResource(entitylivingbaseIn)), matrixStackIn, bufferIn, entitylivingbaseIn, renderType, bufferIn.getBuffer(armor), partialTicks, packedLightIn, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, (MathHelper.clamp(120f - packedLightIn, 0, 120f) / 160f));
     }
 }
