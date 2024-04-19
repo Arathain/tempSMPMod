@@ -1,30 +1,50 @@
-
 package arathain.mason.client;
-import arathain.mason.MasonDecor;
+
 import arathain.mason.entity.RavenEntity;
 import net.minecraft.util.Identifier;
-import org.spongepowered.asm.mixin.Overwrite;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.processor.IBone;
-import software.bernie.geckolib3.model.AnimatedTickingGeoModel;
+import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.loading.json.raw.Bone;
+import software.bernie.geckolib.model.GeoModel;
 
-public class RavenEntityModel extends AnimatedTickingGeoModel<RavenEntity> {
-    @Override
+public class RavenEntityModel extends GeoModel<RavenEntity> {
+    public RavenEntityModel() {
+    }
+
     public Identifier getModelResource(RavenEntity object) {
-        return new Identifier(MasonDecor.MODID, "geo/entity/raven.geo.json");
+        return new Identifier("mason", "geo/entity/raven.geo.json");
     }
 
-    @Override
     public Identifier getTextureResource(RavenEntity object) {
-        return new Identifier(MasonDecor.MODID, "textures/entity/raven/raven_"+ object.getRavenType().toString().toLowerCase() + ".png");
+        return new Identifier("mason", "textures/entity/raven/raven_" + object.getRavenType().toString().toLowerCase() + ".png");
     }
 
-    @Override
     public Identifier getAnimationResource(RavenEntity animatable) {
-        return new Identifier(MasonDecor.MODID, "animations/entity/raven.animation.json");
+        return new Identifier("mason", "animations/entity/raven.animation.json");
     }
 
     @Override
+    public void setCustomAnimations(RavenEntity entity, long instanceId, AnimationState<RavenEntity> animationState) {
+        super.setCustomAnimations(entity, instanceId, animationState);
+        CoreGeoBone root = this.getAnimationProcessor().getBone("root");
+        if (entity.isBaby()) {
+            if (root != null) {
+                root.setScaleX(0.5F);
+                root.setScaleY(0.5F);
+                root.setScaleZ(0.5F);
+                root.setPosY(-0.1F);
+            }
+        } else if (root != null) {
+            root.setScaleX(1.2F);
+            root.setScaleY(1.2F);
+            root.setScaleZ(1.2F);
+            root.setPosY(0.05F);
+        }
+    }
+}
+
+
+    /*@Override
     public void codeAnimations(RavenEntity entity, Integer uniqueID, AnimationEvent<?> customPredicate) {
         super.codeAnimations(entity, uniqueID, customPredicate);
         IBone root = this.getAnimationProcessor().getBone("root");
@@ -43,5 +63,4 @@ public class RavenEntityModel extends AnimatedTickingGeoModel<RavenEntity> {
                 root.setPositionY(0.05F);
             }
         }
-    }
-}
+    }*/

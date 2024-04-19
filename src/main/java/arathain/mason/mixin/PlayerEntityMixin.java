@@ -16,9 +16,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -39,8 +39,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     @Shadow public abstract PlayerInventory getInventory();
 
     @Shadow protected boolean isSubmergedInWater;
-
-    @Shadow @Final private PlayerAbilities abilities;
 
     @Shadow public abstract boolean isInvulnerableTo(DamageSource damageSource);
 
@@ -75,7 +73,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         return super.isSneaking();
     }
     @ModifyArgs(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
-    private void malum$onDamaged(Args args) {
+    private void mason$onDamaged(Args args) {
         DamageSource source = args.get(0);
         float value = args.get(1);
         if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && this.isSubmergedInWater && !isInvulnerableTo(source) && !this.isDead() && random.nextInt(6) == 1) {
@@ -100,7 +98,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Override
     public boolean hurtByWater() {
-        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (this.getWorld().getBiome(this.getBlockPos()).isIn(BiomeTags.IS_RIVER) || isInFlowingFluid(FluidTags.WATER))) {
+        if(this.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && (this.getWorld().getBiome(this.getBlockPos()).isIn(BiomeTags.RIVER) || isInFlowingFluid(FluidTags.WATER))) {
             return true;
         }
         return super.hurtByWater();
@@ -135,12 +133,12 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 for (int r = m; r < n; ++r) {
                     double e;
                     mutable.set(p, q, r);
-                    FluidState fluidState = this.world.getFluidState(mutable);
-                    if (!fluidState.isIn(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, mutable))) >= box.minY) || fluidState.isEqualAndStill(Fluids.WATER)) continue;
+                    FluidState fluidState = this.getWorld().getFluidState(mutable);
+                    if (!fluidState.isIn(tag) || !((e = (double)((float)q + fluidState.getHeight(this.getWorld(), mutable))) >= box.minY) || fluidState.isEqualAndStill(Fluids.WATER)) continue;
                     bl2 = true;
                     d = Math.max(e - box.minY, d);
                     if (!bl) continue;
-                    Vec3d vec3d2 = fluidState.getVelocity(this.world, mutable);
+                    Vec3d vec3d2 = fluidState.getVelocity(this.getWorld(), mutable);
                     if (d < 0.4) {
                         vec3d2 = vec3d2.multiply(d);
                     }

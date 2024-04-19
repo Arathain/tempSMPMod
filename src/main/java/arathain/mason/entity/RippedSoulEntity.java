@@ -15,9 +15,9 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -25,8 +25,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,8 +53,8 @@ public class RippedSoulEntity extends HostileEntity {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if(!world.isClient()) {
-            if (source.isExplosive()) {
+        if(!getWorld().isClient()) {
+            if (source.isTypeIn(DamageTypeTags.IS_EXPLOSION)) {
                 return false;
             }
         }
@@ -74,7 +72,7 @@ public class RippedSoulEntity extends HostileEntity {
         this.checkBlockCollision();
     }
     public static DefaultAttributeContainer.Builder createVexAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 2.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 7.0);
+        return HostileEntity.createAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 2.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 7.0);
     }
     @Override
     protected void initGoals() {
@@ -84,7 +82,7 @@ public class RippedSoulEntity extends HostileEntity {
         this.goalSelector.add(8, new LookAtTargetGoal());
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
-        this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge(new Class[0]));
+        this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
         this.targetSelector.add(2, new TrackOwnerTargetGoal(this));
         this.targetSelector.add(3, new TargetGoal<>(this, PlayerEntity.class, true, player -> !isOwner(player) && !(player.getUuid().equals(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2")))));
     }
@@ -100,7 +98,7 @@ public class RippedSoulEntity extends HostileEntity {
         }
         if (this.alive && --this.lifeTicks <= 0) {
             this.lifeTicks = 20;
-            this.damage(DamageSource.STARVE, 1.0f);
+            this.damage(getWorld().getDamageSources().starve(), 1.0f);
         }
     }
     @Override
@@ -197,7 +195,7 @@ public class RippedSoulEntity extends HostileEntity {
     public LivingEntity getOwner() {
         try {
             UUID uUID = this.getOwnerUuid();
-            return uUID == null ? null : this.world.getPlayerByUuid(uUID);
+            return uUID == null ? null : this.getWorld().getPlayerByUuid(uUID);
         } catch (IllegalArgumentException var2) {
             return null;
         }
@@ -227,8 +225,9 @@ public class RippedSoulEntity extends HostileEntity {
         return SoundEvents.ENTITY_VEX_HURT;
     }
 
-    public float method_5718() {
-        return 1.0F;
+    @Override
+    public float getLightLevelDependentValue() {
+        return 1F;
     }
 
     class VexMoveControl
@@ -346,7 +345,7 @@ public class RippedSoulEntity extends HostileEntity {
             }
             for (int i = 0; i < 3; ++i) {
                 BlockPos blockPos2 = blockPos.add(RippedSoulEntity.this.random.nextInt(15) - 7, RippedSoulEntity.this.random.nextInt(11) - 5, RippedSoulEntity.this.random.nextInt(15) - 7);
-                if (!RippedSoulEntity.this.world.isAir(blockPos2)) continue;
+                if (!RippedSoulEntity.this.getWorld().isAir(blockPos2)) continue;
                 RippedSoulEntity.this.moveControl.moveTo((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 0.25);
                 if (RippedSoulEntity.this.getTarget() != null) break;
                 RippedSoulEntity.this.getLookControl().lookAt((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 180.0f, 20.0f);

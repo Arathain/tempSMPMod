@@ -1,23 +1,20 @@
 package arathain.mason.entity;
 
 import arathain.mason.init.MasonObjects;
-import ladysnake.illuminations.client.Illuminations;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.NetherStarItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.explosion.Explosion;
+import org.ladysnake.effective.Effective;
+import org.quiltmc.loader.api.QuiltLoader;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class SoulExplosionEntity extends Entity {
@@ -34,10 +31,10 @@ public class SoulExplosionEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (world.isClient()) {
-            if(this.age < 200 && FabricLoader.getInstance().isModLoaded("illuminations")) {
+        if (getWorld().isClient()) {
+            if(this.age < 200 && QuiltLoader.isModLoaded("effective")) {
                 if (this.age % 4 == 0) {
-                    this.getWorld().addParticle(Illuminations.WILL_O_WISP, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
+                    this.getWorld().addParticle(Effective.WILL_O_WISP, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
                 }
             }
             for (int i = 1; i < (8); i++) {
@@ -73,18 +70,18 @@ public class SoulExplosionEntity extends Entity {
                         (random.nextFloat()-0.5f) / 4, 3f + random.nextFloat(), (random.nextFloat()-0.5f) / 4);
             }
         } else {
-            this.world.createExplosion(this, this.getX() + (random.nextFloat()-0.5f) * 15, this.getY() - (MathHelper.abs((float) random.nextFloat()) * 140) + 10, this.getZ() + (random.nextFloat()-0.5f) * 15, 12.0f, true, Explosion.DestructionType.DESTROY);
+            this.getWorld().createExplosion(this, this.getX() + (random.nextFloat()-0.5f) * 15, this.getY() - (MathHelper.abs((float) random.nextFloat()) * 140) + 10, this.getZ() + (random.nextFloat()-0.5f) * 15, 12.0f, true, World.ExplosionSourceType.NONE);
             if(this.age % 8 == 0) {
                 RippedSoulEntity soul = new RippedSoulEntity(MasonObjects.RIPPED_SOUL, this.getWorld());
                 soul.setOwnerUuid(UUID.fromString("1ece513b-8d36-4f04-9be2-f341aa8c9ee2"));
                 soul.setPosition(this.getPos().add(0, 1, 0));
-                this.world.spawnEntity(soul);
+                this.getWorld().spawnEntity(soul);
             }
             if(this.age > 600) {
-                this.world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
-                LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);
+                this.getWorld().syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
+                LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.getWorld());
                 lightningEntity.refreshPositionAfterTeleport(this.getPos());
-                world.spawnEntity(lightningEntity);
+                getWorld().spawnEntity(lightningEntity);
                 this.remove(RemovalReason.DISCARDED);
             }
         }
@@ -106,7 +103,7 @@ public class SoulExplosionEntity extends Entity {
     }
 
     @Override
-    public Packet<?> createSpawnPacket() {
+    public Packet<ClientPlayPacketListener> createSpawnPacket() {
         return new EntitySpawnS2CPacket(this);
     }
 }

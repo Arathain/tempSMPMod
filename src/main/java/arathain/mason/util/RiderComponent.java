@@ -14,36 +14,39 @@ public class RiderComponent implements AutoSyncedComponent {
         this.entity = entity;
     }
 
-    @Override
     public void readFromNbt(NbtCompound tag) {
-        setPressingUp(tag.getBoolean("PressingUp"));
-        setPressingDown(tag.getBoolean("PressingDown"));
+        this.setPressingUp(tag.getBoolean("PressingUp"));
+        this.setPressingDown(tag.getBoolean("PressingDown"));
     }
 
-    @Override
     public void writeToNbt(NbtCompound tag) {
-        tag.putBoolean("PressingUp", isPressingUp());
-        tag.putBoolean("PressingDown", isPressingDown());
+        tag.putBoolean("PressingUp", this.isPressingUp());
+        tag.putBoolean("PressingDown", this.isPressingDown());
     }
 
     public boolean isPressingUp() {
-        return pressingUp;
+        return this.pressingUp;
     }
+
     public boolean isPressingDown() {
-        return pressingDown;
+        return this.pressingDown;
     }
 
     public void setPressingUp(boolean pressingUp) {
         boolean pressing = pressingUp == this.pressingUp;
         this.pressingUp = pressingUp;
-        if(pressing)
-        MasonComponents.RIDER_COMPONENT.sync(entity);
+        if (pressing) {
+            MasonComponents.RIDER_COMPONENT.sync(this.entity);
+        }
+
     }
 
     public void setPressingDown(boolean pressingDown) {
         boolean pressing = pressingDown == this.pressingDown;
         this.pressingDown = pressingDown;
-        if(pressing)
-        MasonComponents.RIDER_COMPONENT.sync(entity);
+        if (pressing) {
+            MasonComponents.RIDER_COMPONENT.sync(this.entity);
+        }
+
     }
 }

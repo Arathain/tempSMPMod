@@ -5,7 +5,6 @@ import arathain.mason.entity.goal.RavenDeliverBundleGoal;
 import arathain.mason.entity.goal.RavenFollowOwnerGoal;
 import arathain.mason.init.MasonObjects;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.*;
@@ -21,7 +20,6 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
-import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,27 +35,27 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
+import net.minecraft.world.EntityView;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public class RavenEntity extends TameableEntity implements IAnimatable, IAnimationTickable {
+public class RavenEntity extends TameableEntity implements GeoAnimatable {
     private static final TrackedData<Optional<UUID>> RECEIVER_UUID = DataTracker.registerData(RavenEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     public static final TrackedData<String> TYPE = DataTracker.registerData(RavenEntity.class, TrackedDataHandlerRegistry.STRING);
-    private final AnimationFactory factory = new AnimationFactory(this);
+    private final AnimatableInstanceCache factory = GeckoLibUtil.createInstanceCache(this);
     private static final TrackedData<Boolean> SITTING = DataTracker.registerData(RavenEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final TrackedData<Boolean> GOING_TO_RECEIVER = DataTracker.registerData(RavenEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public RavenEntity(EntityType<? extends TameableEntity> type, World world) {
@@ -83,7 +81,7 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
         targetSelector.add(2, new RevengeGoal(this).setGroupRevenge());
     }
     public static DefaultAttributeContainer.Builder createRavenAttributes() {
-        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3).add(EntityAttributes.GENERIC_FLYING_SPEED, 0.7);
+        return MobEntity.createAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3).add(EntityAttributes.GENERIC_FLYING_SPEED, 0.7);
     }
 
     @Override
@@ -178,13 +176,13 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
 
 
     public void spawnFeatherParticles(int count) {
-        if(world.isClient) {
+        if(getWorld().isClient) {
             float height = this.getHeight();
             if (height * 100 < 100) height = 1.0F;
             else height = height + 0.5F;
             for (int i = 0; i <= count; i++) {
                 double randomHeight = (double) this.random.nextInt((int) height * 10) / 10;
-                world.addParticle(
+                getWorld().addParticle(
                         switch(this.getRavenType()) {
                             case DARK, THREE_EYED -> MasonDecorClient.RAVEN_FEATHER;
                             case ALBINO -> MasonDecorClient.RAVEN_FEATHER_ALBINO;
@@ -199,7 +197,7 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         if(stack.getItem().equals(Items.BUNDLE) && stack.hasCustomName()) {
-            if (!this.world.isClient) {
+            if (!this.getWorld().isClient) {
                 this.equipStack(EquipmentSlot.MAINHAND, stack.copy());
                 player.setStackInHand(hand, ItemStack.EMPTY);
                 ItemStack stack2 = this.getEquippedStack(EquipmentSlot.MAINHAND);
@@ -216,45 +214,45 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
                     this.dataTracker.set(GOING_TO_RECEIVER, false);
                 }
             }
-            return ActionResult.success(this.world.isClient);
+            return ActionResult.success(this.getWorld().isClient);
         }
         if(stack.isEmpty() && this.getStackInHand(Hand.MAIN_HAND).getItem().equals(Items.BUNDLE) && !player.isSneaking()) {
-            if (!this.world.isClient) {
+            if (!this.getWorld().isClient) {
                 player.setStackInHand(hand, this.getStackInHand(Hand.MAIN_HAND));
                 this.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
             }
-            return ActionResult.success(this.world.isClient);
+            return ActionResult.success(this.getWorld().isClient);
         }
         if (this.isOnGround() && this.isTamed() && this.isOwner(player) && stack.isEmpty()) {
-            if (!this.world.isClient) {
+            if (!this.getWorld().isClient) {
                 this.setSitting(!this.isSitting());
             }
 
-            return ActionResult.success(this.world.isClient);
+            return ActionResult.success(this.getWorld().isClient);
         }
         if (!isTamed()) {
             if (isBreedingItem(stack)) {
-                if (!world.isClient()) {
+                if (!getWorld().isClient()) {
                     eat(player, hand, stack);
                     if (random.nextInt(4) == 0) {
                         setOwner(player);
                         setSitting(true);
                         setTarget(null);
                         navigation.stop();
-                        world.sendEntityStatus(this, (byte) 7);
+                        getWorld().sendEntityStatus(this, (byte) 7);
                     } else {
-                        world.sendEntityStatus(this, (byte) 6);
+                        getWorld().sendEntityStatus(this, (byte) 6);
                     }
                 }
-                return ActionResult.success(world.isClient());
+                return ActionResult.success(getWorld().isClient());
             }
         } else if (isBreedingItem(stack)) {
             if (getHealth() < getMaxHealth()) {
-                if (!world.isClient()) {
+                if (!getWorld().isClient()) {
                     eat(player, hand, stack);
                     heal(4);
                 }
-                return ActionResult.success(world.isClient());
+                return ActionResult.success(getWorld().isClient());
             }
         }
         return super.interactMob(player, hand);
@@ -289,7 +287,7 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
     }
     private void flapWings() {
         this.prevMaxWingDeviation = this.maxWingDeviation;
-        this.maxWingDeviation += (float)(this.onGround || this.hasVehicle() ? -1 : 4) * 0.3f;
+        this.maxWingDeviation += (float)(this.isOnGround() || this.hasVehicle() ? -1 : 4) * 0.3f;
         this.maxWingDeviation = MathHelper.clamp(this.maxWingDeviation, 0.0f, 1.0f);
     }
 
@@ -326,30 +324,22 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
         return child;
     }
 
-    @Override
-    public void registerControllers(AnimationData animationData) {
-        animationData.addAnimationController(new AnimationController<>(this, "controller", 3, this::predicate));
-    }
-
-    @Override
-    public AnimationFactory getFactory() {
-        return factory;
-    }
-
-    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        AnimationBuilder animationBuilder = new AnimationBuilder();
-        if(!this.isOnGround()) {
-            animationBuilder.addAnimation(Math.abs(getVelocity().y) > 0.1f ? "fastFly" : "fly", true);
+    private <E extends GeoAnimatable> PlayState predicate(AnimationState<E> event) {
+        RawAnimation animationBuilder = RawAnimation.begin();
+        if (!this.isOnGround()) {
+            animationBuilder.thenLoop(Math.abs(this.getVelocity().y) > 0.1f ? "fastFly" : "fly");
             event.getController().setAnimation(animationBuilder);
-        } else if(!dataTracker.get(SITTING) && !this.hasVehicle()) {
-            animationBuilder.addAnimation("idle", true);
+        } else if (!(Boolean)this.dataTracker.get(SITTING) && !this.hasVehicle()) {
+            animationBuilder.thenLoop("idle");
             event.getController().setAnimation(animationBuilder);
         } else {
-            animationBuilder.addAnimation("sitIdle", true);
+            animationBuilder.thenLoop("sitIdle");
             event.getController().setAnimation(animationBuilder);
         }
+
         return PlayState.CONTINUE;
     }
+
 
     @Override
     public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
@@ -403,8 +393,23 @@ public class RavenEntity extends TameableEntity implements IAnimatable, IAnimati
     }
 
     @Override
-    public int tickTimer() {
-        return age;
+    public EntityView getEntityView() {
+        return this.getWorld();
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "controller", 3, this::predicate));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.factory;
+    }
+
+    @Override
+    public double getTick(Object object) {
+        return this.age;
     }
 
     public enum Type {

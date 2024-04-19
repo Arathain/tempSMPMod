@@ -27,7 +27,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
+import net.minecraft.registry.Holder;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -43,39 +45,39 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.IAnimationTickable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SoulmouldEntity extends HostileEntity implements TameableHostileEntity, IAnimatable, IAnimationTickable {
-    private final AnimationFactory factory = new AnimationFactory(this);
+public class SoulmouldEntity extends HostileEntity implements TameableHostileEntity, GeoAnimatable {
+    private final AnimatableInstanceCache factory = GeckoLibUtil.createInstanceCache(this);
     protected static final TrackedData<Boolean> DORMANT = DataTracker.registerData(SoulmouldEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final TrackedData<Optional<BlockPos>> DORMANT_POS = DataTracker.registerData(SoulmouldEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
     public static final TrackedData<Integer> ATTACK_STATE = DataTracker.registerData(SoulmouldEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public static final TrackedData<Integer> ACTION_STATE = DataTracker.registerData(SoulmouldEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    public static final TrackedData<Direction> DORMANT_DIR = DataTracker.registerData(SoulmouldEntity.class, TrackedDataHandlerRegistry.FACING);
+    public static final TrackedData<Direction> DORMANT_DIR = DataTracker.registerData(SoulmouldEntity.class, TrackedDataHandlerRegistry.DIRECTION);
     private static final TrackedData<Byte> TAMEABLE = DataTracker.registerData(SoulmouldEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(SoulmouldEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     public int activationTicks = 0;
     public int dashSlashTicks = 0;
     public SoulmouldEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        this.stepHeight = 1.6f;
+        this.setStepHeight(1.6f);
         this.setPathfindingPenalty(PathNodeType.LAVA, 0);
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0);
     }
 
     public static DefaultAttributeContainer.Builder createSoulmouldAttributes() {
-        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 160).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 9).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f).add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 6f);
+        return MobEntity.createAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 160).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 9).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0f).add(EntityAttributes.GENERIC_ARMOR, 24f).add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 6f);
     }
     @Override
     public boolean canHaveStatusEffect(StatusEffectInstance effect) {
@@ -114,8 +116,8 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if(!world.isClient()) {
-            if (source.isExplosive()) {
+        if(!getWorld().isClient()) {
+            if (source.isTypeIn(DamageTypeTags.IS_EXPLOSION)) {
                 amount *= 0.5;
             }
         }
@@ -211,7 +213,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     public LivingEntity getOwner() {
         try {
             UUID uUID = this.getOwnerUuid();
-            return uUID == null ? null : this.world.getPlayerByUuid(uUID);
+            return uUID == null ? null : this.getWorld().getPlayerByUuid(uUID);
         } catch (IllegalArgumentException var2) {
             return null;
         }
@@ -265,13 +267,13 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     private void cycleActionState(PlayerEntity player) {
         if(getActionState() == 1) {
             setActionState(2);
-            player.sendMessage(Text.translatable("amogus", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withObfuscated(true).withFont(new Identifier("minecraft", "default"))), true);
+            player.sendMessage(Text.translatable("amogus", getWorld().getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_RED).withObfuscated(true).withFont(new Identifier("minecraft", "default"))), true);
         } else if(getActionState() == 0) {
             setActionState(1);
-            player.sendMessage(Text.translatable("info.tot.mould_activate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), true);
+            player.sendMessage(Text.translatable("info.tot.mould_activate", getWorld().getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), true);
         } else if(getActionState() == 2) {
             setActionState(0);
-            player.sendMessage(Text.translatable("info.tot.mould_deactivate", world.getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY)), true);
+            player.sendMessage(Text.translatable("info.tot.mould_deactivate", getWorld().getRegistryKey().getValue().getPath()).setStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY)), true);
         }
     }
     @Override
@@ -301,7 +303,7 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
             heal(2);
         }
         if (getTarget() != null && (!getTarget().isAlive() || getTarget().getHealth() <= 0)) setTarget(null);
-        if(!world.isClient) {
+        if(!getWorld().isClient) {
             if (!isDormant()) {
                 if ((this.getTarget() == null || (this.getTarget() != null && this.getDormantPos().isPresent() && !this.getDormantPos().get().isWithinDistance(this.getTarget().getBlockPos(), 16))) && forwardSpeed == 0 && this.getNavigation().isIdle() && isAtDormantPos()) {
                     setDormant(true);
@@ -332,34 +334,29 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     }
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        if(world instanceof ServerWorld server)
-            server.getServer().getPlayerManager().sendToAround(null, this.getX(), this.getY(), this.getZ(), 32.0, server.getRegistryKey(), new PlaySoundS2CPacket(SoundEvents.ENTITY_IRON_GOLEM_STEP, this.getSoundCategory(), this.getX(), this.getY(), this.getZ(), 32.0f, 1.0f, 69L));
+        if(getWorld() instanceof ServerWorld server)
+            server.getServer().getPlayerManager().sendToAround(null, this.getX(), this.getY(), this.getZ(), 32.0, server.getRegistryKey(), new PlaySoundFromEntityS2CPacket(Holder.createDirect(SoundEvents.ENTITY_IRON_GOLEM_STEP), this.getSoundCategory(), this, 32.0F, 1.0F, 69L));
     }
 
-
-    @Override
-    public void registerControllers(AnimationData animationData) {
-        animationData.addAnimationController(new AnimationController<>(this, "controller", 5, this::predicate));
-    }
-    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        AnimationBuilder animationBuilder = new AnimationBuilder();
+    private <E extends GeoAnimatable> PlayState predicate(AnimationState<E> event) {
+        RawAnimation animationBuilder = RawAnimation.begin();
         if (this.isDormant()) {
             if (getAttackState() == 1) {
-                animationBuilder.addAnimation("activate", false);
+                animationBuilder.thenPlay("activate");
             } else {
-                animationBuilder.addAnimation("dormant", true);
+                animationBuilder.thenLoop("dormant");
             }
         } else if(this.getAttackState() == 2) {
-            animationBuilder.addAnimation("attack", true);
+            animationBuilder.thenLoop("attack");
         } else {
             if (!this.hasVehicle() && event.isMoving()) {
-                animationBuilder.addAnimation("walk", true);
+                animationBuilder.thenLoop("walk");
             } else {
-                animationBuilder.addAnimation("idle", true);
+                animationBuilder.thenLoop("idle");
             }
         }
 
-        if(!animationBuilder.getRawAnimationList().isEmpty()) {
+        if(!animationBuilder.getAnimationStages().isEmpty()) {
             event.getController().setAnimation(animationBuilder);
         }
         return PlayState.CONTINUE;
@@ -381,11 +378,6 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     @Override
     public boolean collides() {
         return !this.isRemoved();
-    }
-
-    @Override
-    public AnimationFactory getFactory() {
-        return factory;
     }
 
     public Optional<BlockPos> getDormantPos() {
@@ -432,7 +424,17 @@ public class SoulmouldEntity extends HostileEntity implements TameableHostileEnt
     }
 
     @Override
-    public int tickTimer() {
-        return age;
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "controller", 5, this::predicate));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.factory;
+    }
+
+    @Override
+    public double getTick(Object object) {
+        return this.age;
     }
 }

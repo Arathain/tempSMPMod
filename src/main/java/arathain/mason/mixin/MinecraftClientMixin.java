@@ -20,7 +20,6 @@ import javax.annotation.Nullable;
 public abstract class MinecraftClientMixin {
     @Shadow @Nullable
     public ClientPlayerEntity player;
-    @Shadow protected int attackCooldown;
     @Shadow
     @Nullable public HitResult crosshairTarget;
     @Unique

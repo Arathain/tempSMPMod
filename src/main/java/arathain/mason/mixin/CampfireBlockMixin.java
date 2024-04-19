@@ -16,12 +16,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CampfireBlock.class)
 public class CampfireBlockMixin {
+
     @Shadow @Final private boolean emitsParticles;
 
-    @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
+    public CampfireBlockMixin() {
+    }
+
+    @Inject(
+            method = {"onEntityCollision"},
+            at = {@At("HEAD")},
+            cancellable = true
+    )
     private void cancelEffigy(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
-        if(entity instanceof PlayerEntity player && player.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && !this.emitsParticles) {
-            ci.cancel();
+        if (entity instanceof PlayerEntity player) {
+            if (player.getInventory().contains(MasonObjects.SOULTRAP_EFFIGY_ITEM.getDefaultStack()) && !this.emitsParticles) {
+                ci.cancel();
+            }
         }
+
     }
 }

@@ -62,7 +62,7 @@ public class GlaiveItem extends SwordItem {
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if(attacker instanceof PlayerEntity player) {
             player.spawnSweepAttackParticles();
-            target.damage(SoulRipDamageSource.playerRip(player), this.attackDamage);
+            target.damage(target.getWorld().getDamageSources().create(MasonObjects.SOUL_RIP_DMG_TYPE, player), this.attackDamage);
         }
         return super.postHit(stack, target, attacker);
     }
@@ -73,7 +73,7 @@ public class GlaiveItem extends SwordItem {
         if(!player.getItemCooldownManager().isCoolingDown(MasonObjects.GLAIVE)) {
             float yaw = player.getYaw() * 0.017453292F;
             Vec3d pos = player.getPos().add(-MathHelper.sin(yaw) * 1.4D, player.getHeight() / 2D, MathHelper.cos(yaw) * 1.4D);
-            List<LivingEntity> targets = player.world.getEntitiesByClass(LivingEntity.class, Box.from(pos).offset(-0.5D, -0.5D, -0.5D).expand(3D, 1D, 3D), EntityPredicates.EXCEPT_SPECTATOR);
+            List<LivingEntity> targets = player.getWorld().getEntitiesByClass(LivingEntity.class, Box.from(pos).offset(-0.5D, -0.5D, -0.5D).expand(3D, 1D, 3D), EntityPredicates.EXCEPT_SPECTATOR);
             stack.damage(1, player, entity -> entity.sendEquipmentBreakStatus(hand.equals(Hand.MAIN_HAND) ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
 
             targets.forEach(target -> {
@@ -87,10 +87,10 @@ public class GlaiveItem extends SwordItem {
                             world.addImportantParticle(ParticleTypes.SOUL_FIRE_FLAME, target.getParticleX(0.5), target.getRandomBodyY(), target.getParticleZ(0.5), (r.nextFloat() - 0.5f) * 0.5f, r.nextFloat()* 0.5f, (r.nextFloat() - 0.5f) * 0.5f);
                         }
                     }
-                    target.damage(SoulRipDamageSource.playerRip(player), this.attackDamage);
+                    target.damage(player.getWorld().getDamageSources().create(MasonObjects.SOUL_RIP_DMG_TYPE, player), this.attackDamage);
                 }
             });
-            player.world.playSoundFromEntity(null, player, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, player.getSoundCategory(), 1F, 1F);
+            player.getWorld().playSoundFromEntity(null, player, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, player.getSoundCategory(), 1F, 1F);
             player.swingHand(hand);
             spawnSweepAttackParticles(player);
             player.getItemCooldownManager().set(MasonObjects.GLAIVE, 35);
@@ -100,11 +100,11 @@ public class GlaiveItem extends SwordItem {
 
     }
     private void spawnSweepAttackParticles(PlayerEntity player) {
-        if (player.world instanceof ServerWorld) {
+        if (player.getWorld() instanceof ServerWorld serverWorld) {
             for(int i = 0; i <= 6; i++) {
                 double d = -MathHelper.sin((player.getYaw() + i*20 - 60) * ((float)Math.PI / 180)) * 3;
                 double e = MathHelper.cos((player.getYaw() + i*20 - 60) * ((float)Math.PI / 180)) * 3;
-                ((ServerWorld) player.world).spawnParticles(ParticleTypes.SWEEP_ATTACK, player.getX() + d, player.getBodyY(0.5), player.getZ() + e, 0, d, 0.0, e, 0.0);
+                (serverWorld).spawnParticles(ParticleTypes.SWEEP_ATTACK, player.getX() + d, player.getBodyY(0.5), player.getZ() + e, 0, d, 0.0, e, 0.0);
             }
         }
     }

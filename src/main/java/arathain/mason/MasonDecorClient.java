@@ -6,22 +6,21 @@ import arathain.mason.item.GlaiveItemRenderer;
 import arathain.mason.util.UpdatePressingUpDownPacket;
 import com.mojang.blaze3d.platform.InputUtil;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBind;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
@@ -29,6 +28,7 @@ import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
 import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 import org.quiltmc.qsl.resource.loader.api.reloader.ResourceReloaderKeys;
+
 
 
 public class MasonDecorClient implements ClientModInitializer {
@@ -56,14 +56,17 @@ public class MasonDecorClient implements ClientModInitializer {
 
             }
         });
-        Identifier scytheId = Registry.ITEM.getId(MasonObjects.GLAIVE);
+
+        Identifier scytheId = Registries.ITEM.getId(MasonObjects.GLAIVE);
         GlaiveItemRenderer scytheItemRenderer = new GlaiveItemRenderer(scytheId);
         ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(scytheItemRenderer);
         ResourceLoader.get(ResourceType.CLIENT_RESOURCES).addReloaderOrdering(ResourceReloaderKeys.Client.MODELS, scytheItemRenderer.getQuiltId());
         BuiltinItemRendererRegistry.INSTANCE.register(MasonObjects.GLAIVE, scytheItemRenderer);
-        ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-            out.accept(new ModelIdentifier(scytheId + "_gui", "inventory"));
-            out.accept(new ModelIdentifier(scytheId + "_handheld", "inventory"));
+        ModelLoadingPlugin.register((manager) -> {
+            manager.addModels(
+                    new ModelIdentifier(scytheId.getNamespace(), scytheId.getPath() + "_gui", "inventory"),
+                    new ModelIdentifier(scytheId.getNamespace(), scytheId.getPath() + "_handheld", "inventory")
+            );
         });
     }
 
@@ -78,6 +81,6 @@ public class MasonDecorClient implements ClientModInitializer {
     }
 
     private static DefaultParticleType add(String name) {
-        return Registry.register(Registry.PARTICLE_TYPE, new Identifier(MasonDecor.MODID, name), FabricParticleTypes.simple());
+        return Registry.register(Registries.PARTICLE_TYPE, new Identifier(MasonDecor.MODID, name), FabricParticleTypes.simple());
     }
 }

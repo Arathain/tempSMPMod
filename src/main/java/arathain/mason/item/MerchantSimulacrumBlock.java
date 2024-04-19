@@ -1,25 +1,29 @@
 package arathain.mason.item;
 
 import arathain.mason.entity.SoulmouldEntity;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldEvents;
 
 public class MerchantSimulacrumBlock extends Block implements Waterloggable {
     public MerchantSimulacrumBlock(Settings settings) {
@@ -72,7 +76,6 @@ public class MerchantSimulacrumBlock extends Block implements Waterloggable {
 
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        super.onBreak(world, pos, state, player);
         world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, pos, 0);
         world.getOtherEntities(player, new Box(pos).expand(100), (entity -> entity instanceof SoulmouldEntity)).forEach(soulmould -> ((SoulmouldEntity)soulmould).setActionState(2));
     }
