@@ -76,19 +76,7 @@ public class MerchantSimulacrumBlock extends Block implements Waterloggable {
 
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        super.onBreak(world, pos, state, player);
-        WitherEntity him = new WitherEntity(EntityType.WITHER, world);
-        him.setPos(pos.getX(), pos.getY(), pos.getZ());
-        him.bodyYaw = MathHelper.wrapDegrees(player.getYaw() + 180f);
-        him.onSummoned();
-
-        for (ServerPlayerEntity serverPlayerEntity :
-                world.getNonSpectatingEntities(ServerPlayerEntity.class,
-                        him.getBoundingBox().expand(50.0))) {
-            Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, him);
-        }
-
-        world.spawnEntity(him);
+        world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, pos, 0);
         world.getOtherEntities(player, new Box(pos).expand(100), (entity -> entity instanceof SoulmouldEntity)).forEach(soulmould -> ((SoulmouldEntity)soulmould).setActionState(2));
     }
 }
